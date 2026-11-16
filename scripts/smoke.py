@@ -29,7 +29,9 @@ def main() -> None:
             posts = service.list_posts()
             first = posts["posts"][0]["id"] if posts["posts"] else None
             new = service.whats_new()
-            again = service.whats_new()
+            again = service.whats_new()  # not acknowledged: everything comes back
+            service.ack(again["cursor"])
+            after_ack = service.whats_new()
             print(f"enfants : {', '.join(c['first_name'] for c in account['children'])}")
             print(f"classes et écoles : {len(account['groups'])}")
             print(
@@ -40,7 +42,8 @@ def main() -> None:
                 f"whats_new (premier appel) : {len(new['posts'])} mots, {len(new['notifications'])} notifications, "
                 f"{new['unread_messages']} messages non lus"
             )
-            print(f"whats_new (second appel) : {len(again['posts'])} mots, {len(again['notifications'])} notifications")
+            print(f"whats_new (sans ack) : {len(again['posts'])} mots, {len(again['notifications'])} notifications")
+            print(f"whats_new (après ack) : {len(after_ack['posts'])} mots, {len(after_ack['notifications'])} notifications")
             print(f"notifications : {len(service.notifications())}")
             print(f"conversations : {len(service.conversations() or [])}")
             if first:

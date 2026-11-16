@@ -6,12 +6,21 @@ from conftest import P
 POSTS_PAGE_3 = ("GET", "/api/family/posts", (("page", 3), ("status", "published")))
 
 
+def run(svc):
+    """whats_new followed by a successful delivery (ack)."""
+    r = svc.whats_new()
+    svc.ack(r["cursor"])
+    return r
+
+
 def test_first_run_reports_last_7_days_only(svc):
     r = svc.whats_new()
     assert r["first_run"] is True
     assert [(p["id"], p["change"]) for p in r["posts"]] == [(P + "1", "new")]
     assert [n["id"] for n in r["notifications"]] == ["n-1"]  # n-2 > 7 days, n-3 FAMILY, n-4 > 30 days
     assert r["notifications"][0]["change"] == "new"
+    assert svc.state.seen_fingerprint("post", P + "2") is None  # nothing is seen before ack
+    svc.ack(r["cursor"])
     assert svc.state.seen_fingerprint("post", P + "2") is not None
     assert svc.state.seen_fingerprint("notification", "n-2") is not None
 
@@ -30,18 +39,18 @@ def test_pagination_stops_at_window(svc):
 
 
 def test_second_run_reports_nothing_then_content_edit(svc, fake):
-    svc.whats_new()
-    second = svc.whats_new()
+    run(svc)
+    second = run(svc)
     assert second["first_run"] is False
     assert second["posts"] == [] and second["notifications"] == []
     fake.edit_post(P + "2", content="<p>Sport et pas piscine</p>")
-    r = svc.whats_new()
+    r = run(svc)
     assert [(p["id"], p["change"]) for p in r["posts"]] == [(P + "2", "updated")]
     assert r["posts"][0]["text"] == "Sport et pas piscine"
 
 
 def test_new_notification_after_first_run(svc, fake):
-    svc.whats_new()
+    run(svc)
     fake.notification_list.insert(
         0,
         {
@@ -53,13 +62,13 @@ def test_new_notification_after_first_run(svc, fake):
             "appName": "CALENDAR",
         },
     )
-    assert [n["id"] for n in svc.whats_new()["notifications"]] == ["n-5"]
+    assert [n["id"] for n in run(svc)["notifications"]] == ["n-5"]
 
 
 def test_new_signature_is_not_an_update(svc, fake):
-    svc.whats_new()
+    run(svc)
     fake.add_signature(P + "1", by=101, child=202)
-    assert svc.whats_new()["posts"] == []
+    assert run(svc)["posts"] == []
 
 
 def test_scheduled_post_appears_when_visible(svc, clock):
@@ -80,11 +89,11 @@ def test_failure_midway_marks_nothing(svc, fake):
 
 def test_unread_messages_increase(svc, fake):
     fake.set_unread(0)
-    assert svc.whats_new()["unread_messages_increased"] is False
+    assert run(svc)["unread_messages_increased"] is False
     fake.set_unread(2)
-    r = svc.whats_new()
+    r = run(svc)
     assert r["unread_messages"] == 2 and r["unread_messages_increased"] is True
-    assert svc.whats_new()["unread_messages_increased"] is False
+    assert run(svc)["unread_messages_increased"] is False
 
 
 def test_list_posts_hides_scheduled(svc):
@@ -128,9 +137,9 @@ def test_never_posts_outside_lookup(svc):
 
 
 def test_signing_turned_on_is_an_update(svc, fake):
-    svc.whats_new()
+    run(svc)
     fake._post(P + "2")["signableFor"] = [201, 202]
-    assert [(p["id"], p["change"]) for p in svc.whats_new()["posts"]] == [(P + "2", "updated")]
+    assert [(p["id"], p["change"]) for p in run(svc)["posts"]] == [(P + "2", "updated")]
 
 
 def test_first_run_days_widens_the_first_report(tmp_path, fake, clock):
@@ -150,5 +159,6 @@ def test_first_run_days_zero_reports_nothing_but_marks_seen(tmp_path, fake, cloc
     svc = BeneyluService(fake, StateStore(tmp_path / "s0.db"), "https://school.beneylu.com", clock, first_run_days=0)
     r = svc.whats_new()
     assert r["posts"] == [] and r["notifications"] == []
+    svc.ack(r["cursor"])
     assert svc.state.seen_fingerprint("post", P + "1") is not None
     assert svc.whats_new()["posts"] == []

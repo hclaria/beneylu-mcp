@@ -15,6 +15,8 @@ EXPECTED = {
     "list_conversations",
     "get_conversation",
     "get_account",
+    "ack",
+    "pending",
 }
 
 
@@ -47,8 +49,10 @@ def test_tools_exposed(server):
     assert {t.name for t in list_tools(server)} == EXPECTED
 
 
-def test_all_tools_are_read_only(server):
-    assert all(t.annotations and t.annotations.read_only_hint for t in list_tools(server))
+def test_all_tools_but_ack_are_read_only(server):
+    tools = {t.name: t.annotations for t in list_tools(server)}
+    assert all(a and a.read_only_hint for n, a in tools.items() if n != "ack")
+    assert tools["ack"].idempotent_hint and not tools["ack"].destructive_hint and not tools["ack"].open_world_hint
 
 
 def test_guidance_in_descriptions(server):
