@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="robots" content="noindex">
+<title>Aperçu social</title>
+<style>
+  html, body { margin: 0; width: 1200px; height: 630px; overflow: hidden; }
+  body {
+    position: relative;
+    background-color: #fbf8f0;
+    background-image:
+      linear-gradient(rgba(47, 91, 211, 0.11) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(47, 91, 211, 0.11) 1px, transparent 1px),
+      linear-gradient(rgba(47, 91, 211, 0.05) 1px, transparent 1px);
+    background-size: 100% 32px, 32px 32px, 100% 8px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    color: #1b2440;
+  }
+  body::before { content: ""; position: absolute; top: 0; bottom: 0; left: 64px; width: 3px; background: rgba(214, 69, 61, 0.45); }
+  .copy { position: absolute; left: 108px; top: 72px; width: 660px; }
+  .eyebrow { margin: 0 0 22px; color: #d6453d; font-weight: 800; font-size: 20px; letter-spacing: 0.14em; text-transform: uppercase; }
+  h1 { margin: 0; font-family: ui-serif, "New York", Georgia, serif; font-weight: 650; font-size: 64px; line-height: 1.1; letter-spacing: -0.02em; }
+  .mark { background: linear-gradient(transparent 58%, #ffe066 58%, #ffe066 92%, transparent 92%); padding: 0 4px; }
+  .sub { margin: 26px 0 0; font-size: 25px; line-height: 1.4; color: #4b5472; }
+  .brand { margin: 30px 0 0; font: 700 22px ui-monospace, "SF Mono", Menlo, monospace; color: #1b2440; }
+  .phone { position: absolute; right: 86px; top: 58px; width: 300px; height: 600px; padding: 11px; border-radius: 48px; background: #0d0f14; box-shadow: 0 30px 60px rgba(20, 24, 40, 0.28); transform: rotate(4deg); }
+  .screen { height: 100%; border-radius: 38px; overflow: hidden; color: #fff; text-align: center; padding-top: 18px; background: radial-gradient(120% 80% at 20% 0%, #8fb0ff 0%, transparent 60%), radial-gradient(120% 80% at 100% 100%, #ff9fb6 0%, transparent 55%), linear-gradient(170deg, #5b6fe0, #9a6be0 55%, #e58aa8); }
+  .island { width: 96px; height: 28px; border-radius: 20px; background: #000; margin: 0 auto 26px; }
+  .date { margin: 0; font-weight: 600; font-size: 17px; }
+  .time { margin: 0; font-size: 80px; font-weight: 300; line-height: 1.05; letter-spacing: -2px; }
+  .notif { margin: 26px 12px 0; text-align: left; background: rgba(255, 255, 255, 0.66); color: #10131c; border-radius: 20px; padding: 12px 14px; }
+  .notif .h { margin: 0; font-size: 13px; color: #3b4152; }
+  .notif .t { margin: 4px 0 2px; font-weight: 700; font-size: 16px; }
+  .notif .x { margin: 0; font-size: 16px; line-height: 1.35; }
+</style>
+</head>
+<body>
+  <div class="copy">
+    <p class="eyebrow">Pour les parents sur Beneylu School</p>
+    <h1>Le mot arrive mardi à 13h.<br>Le rappel sonne <span class="mark">jeudi à 7h.</span></h1>
+    <p class="sub">Un agent lit le cahier de liaison et pose tout seul les rappels qu'il faut, le jour qu'il faut.</p>
+    <p class="brand">beneylu-mcp</p>
+  </div>
+  <div class="phone">
+    <div class="screen">
+      <div class="island"></div>
+      <p class="date">Jeudi 26 novembre</p>
+      <p class="time">07:00</p>
+      <div class="notif">
+        <p class="h">Telegram · maintenant</p>
+        <p class="t">Hermes</p>
+        <p class="x">🎒 Sortie au musée aujourd'hui pour Lou (CE1). Pique-nique et tenue chaude&#8239;!</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

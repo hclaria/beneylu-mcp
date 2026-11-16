@@ -7,6 +7,10 @@ transmission aux parents soit confirmée par `ack`.
 
 Beneylu n'a pas d'API publique : le serveur utilise l'API interne du site, qui peut changer sans prévenir.
 
+**[Présentation](https://hclaria.github.io/beneylu-mcp/)**. Le plus simple : donner ce dépôt à ton agent Hermes et
+lui demander de mettre en place la surveillance et les rappels. [`examples/hermes/`](examples/hermes/) contient la
+configuration qu'un agent a trouvée seul : des pistes à adapter, pas une installation clé en main.
+
 ## Outils
 
 | Outil | Rôle |
@@ -58,7 +62,7 @@ Dans `~/.hermes/config.yaml` :
 mcp_servers:
   beneylu:
     command: "/Users/<moi>/.local/bin/uvx"
-    args: ["--from", "/chemin/vers/beneylu-mcp", "beneylu-mcp"]
+    args: ["--from", "git+https://github.com/hclaria/beneylu-mcp", "beneylu-mcp"]   # ou un chemin local
     env:
       BENEYLU_USERNAME: "..."
       BENEYLU_PASSWORD: "..."
@@ -80,7 +84,8 @@ rappel. Appelle ensuite ack avec le cursor. Sinon, appelle ack et ne dis rien.
 
 Avec un agent, la confirmation ne prouve que la fin du tour, pas la remise du message. Pour une garantie de bout en
 bout, envoyer soi-même le résumé (par exemple par l'API d'un bot Telegram) et n'appeler `ack` qu'une fois l'envoi
-accepté.
+accepté. C'est ce que fait la piste [`examples/hermes/`](examples/hermes/) : un script envoie et confirme, et
+l'agent ne se réveille que quand un mot arrive, pour poser les rappels.
 
 `get_conversation` peut marquer des messages comme lus pour l'école : ne pas l'utiliser dans une tâche planifiée.
 
