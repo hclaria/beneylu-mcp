@@ -21,7 +21,9 @@ def main() -> None:
     with tempfile.TemporaryDirectory() as tmp:
         state = StateStore(Path(tmp) / "state.db")
         client = BeneyluClient(settings, state)
-        service = BeneyluService(client, state, settings.base_url, lambda: datetime.now().astimezone())
+        service = BeneyluService(
+            client, state, settings.base_url, lambda: datetime.now().astimezone(), settings.first_run_days
+        )
         try:
             account = service.account()
             posts = service.list_posts()

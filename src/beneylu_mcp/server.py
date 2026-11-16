@@ -44,7 +44,7 @@ def build_server(service: BeneyluService) -> MCPServer:
             "Vérification automatique du cahier de liaison Beneylu : renvoie les mots nouveaux ou modifiés, les "
             "nouvelles notifications (pancarte de classe, calendrier de l'école) et le nombre de messages non lus "
             "depuis le dernier appel. Chaque nouveauté n'est renvoyée qu'une fois. Ne marque rien comme lu côté "
-            "école. Au tout premier appel, seuls les 7 derniers jours sont renvoyés. Un mot dont "
+            f"école. Au tout premier appel, seuls les {service.first_run_days} derniers jours sont renvoyés. Un mot dont "
             "pending_signature_for n'est pas vide attend une signature des parents."
         ),
     )
@@ -113,7 +113,9 @@ def main() -> None:
         raise SystemExit(1) from None
     state = StateStore(settings.state_dir / "state.db")
     client = BeneyluClient(settings, state)
-    service = BeneyluService(client, state, settings.base_url, lambda: datetime.now().astimezone())
+    service = BeneyluService(
+        client, state, settings.base_url, lambda: datetime.now().astimezone(), settings.first_run_days
+    )
     try:
         build_server(service).run()
     finally:

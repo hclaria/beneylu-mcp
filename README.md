@@ -27,12 +27,14 @@ recherche de noms. Il n'appelle jamais `/visit`, l'appel par lequel le site sign
 |---|---|
 | `BENEYLU_USERNAME`, `BENEYLU_PASSWORD` | Identifiants du compte parent. Le serveur se connecte et renouvelle sa session seul. |
 | `BENEYLU_REFRESH_TOKEN` | Secours si Beneylu demande un captcha : le `refresh_token` du `localStorage` du navigateur. |
+| `BENEYLU_FIRST_RUN_DAYS` | Nombre de jours renvoyés par le tout premier `whats_new` (7 par défaut, 30 au plus, 0 pour ne rien renvoyer). |
 | `BENEYLU_STATE_DIR` | Dossier de l'état local (par défaut `~/.local/state/beneylu-mcp`). |
 
 En développement, ces variables peuvent aussi venir d'un fichier `.env` dans le dossier courant (ignoré par git).
 
 L'état local (`state.db`, droits `0600`) garde le jeton de session et la liste des éléments déjà vus. Le supprimer
-fait repartir `whats_new` de zéro : au premier appel, il ne renvoie que les 7 derniers jours.
+fait repartir `whats_new` de zéro : au premier appel, il ne renvoie que les `BENEYLU_FIRST_RUN_DAYS` derniers
+jours.
 
 ## Hermes
 

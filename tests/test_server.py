@@ -97,3 +97,12 @@ def test_unexpected_shape_is_a_french_error(server, svc, fake):
     assert result.is_error
     assert "format inattendu" in text_of(result)
     assert svc.state.get("initialized") is None
+
+
+def test_whats_new_description_follows_first_run_days(tmp_path, fake, clock):
+    from beneylu_mcp.service import BeneyluService
+    from beneylu_mcp.state import StateStore
+
+    svc = BeneyluService(fake, StateStore(tmp_path / "s.db"), "https://school.beneylu.com", clock, first_run_days=14)
+    d = {t.name: t.description for t in list_tools(build_server(svc))}
+    assert "14 derniers jours" in d["whats_new"]

@@ -3,6 +3,9 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from pathlib import Path
 
+DETECTION_WINDOW_DAYS = 30
+DEFAULT_FIRST_RUN_DAYS = 7
+
 
 class ConfigError(Exception):
     pass
@@ -15,6 +18,7 @@ class Settings:
     refresh_token: str | None
     state_dir: Path
     base_url: str = "https://school.beneylu.com"
+    first_run_days: int = DEFAULT_FIRST_RUN_DAYS
 
 
 def _read_dotenv(path: Path) -> dict[str, str]:
@@ -41,6 +45,15 @@ def _state_dir(env: Mapping[str, str]) -> Path:
     return Path(env.get("HOME") or Path.home()) / ".local" / "state" / "beneylu-mcp"
 
 
+def _first_run_days(env: Mapping[str, str]) -> int:
+    raw = env.get("BENEYLU_FIRST_RUN_DAYS")
+    if not raw:
+        return DEFAULT_FIRST_RUN_DAYS
+    if not raw.strip().isdigit():
+        raise ConfigError(f"BENEYLU_FIRST_RUN_DAYS doit être un nombre entier de jours (reçu : {raw!r}).")
+    return min(int(raw), DETECTION_WINDOW_DAYS)
+
+
 def load_settings(environ: Mapping[str, str] | None = None, dotenv: Path | None = Path(".env")) -> Settings:
     env = {**(_read_dotenv(dotenv) if dotenv else {}), **(os.environ if environ is None else environ)}
     username = env.get("BENEYLU_USERNAME") or None
@@ -51,4 +64,6 @@ def load_settings(environ: Mapping[str, str] | None = None, dotenv: Path | None 
             "Identifiants Beneylu manquants : définir BENEYLU_USERNAME et BENEYLU_PASSWORD "
             "(ou BENEYLU_REFRESH_TOKEN)."
         )
-    return Settings(username, password, refresh_token, _state_dir(env))
+    return Settings(
+        username, password, refresh_token, _state_dir(env), first_run_days=_first_run_days(env)
+    )

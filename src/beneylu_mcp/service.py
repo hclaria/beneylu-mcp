@@ -3,6 +3,7 @@ from datetime import datetime, timedelta
 from typing import Any
 
 from .client import BeneyluError
+from .config import DEFAULT_FIRST_RUN_DAYS, DETECTION_WINDOW_DAYS
 from .models import (
     Lookups,
     notification_from_api,
@@ -13,19 +14,26 @@ from .models import (
 )
 from .state import StateStore
 
-WINDOW = timedelta(days=30)
-FIRST_RUN_WINDOW = timedelta(days=7)
+WINDOW = timedelta(days=DETECTION_WINDOW_DAYS)
 POSTS_PATH = "/api/family/posts"
 NOTIFICATIONS_PATH = "/api/notification/notifications-in-app"
 CHAT_PATH = "/api/chat/family"
 
 
 class BeneyluService:
-    def __init__(self, client, state: StateStore, base_url: str, now: Callable[[], datetime]):
+    def __init__(
+        self,
+        client,
+        state: StateStore,
+        base_url: str,
+        now: Callable[[], datetime],
+        first_run_days: int = DEFAULT_FIRST_RUN_DAYS,
+    ):
         self.client = client
         self.state = state
         self.base_url = base_url
         self._now = now
+        self.first_run_days = first_run_days
         self._me: dict | None = None
         self._groups: dict[int, str] | None = None
         self._users: dict[int, str] = {}
@@ -74,7 +82,7 @@ class BeneyluService:
         now = self._now()
         start = now - WINDOW
         first_run = self.state.get("initialized") is None
-        report_start = now - FIRST_RUN_WINDOW if first_run else start
+        report_start = now - timedelta(days=self.first_run_days) if first_run else start
 
         # Read everything before touching the state, so a failure loses nothing.
         posts = self._posts_in_window(start, now)

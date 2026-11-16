@@ -33,3 +33,22 @@ def test_refresh_token_alone_is_enough(tmp_path):
 def test_missing_dotenv_file_is_fine(tmp_path):
     s = load_settings({"BENEYLU_REFRESH_TOKEN": "t", "HOME": str(tmp_path)}, tmp_path / "absent.env")
     assert s.username is None
+
+
+def test_first_run_days_default_and_value(tmp_path):
+    base = {"BENEYLU_REFRESH_TOKEN": "t", "HOME": str(tmp_path)}
+    assert load_settings(base, None).first_run_days == 7
+    assert load_settings({**base, "BENEYLU_FIRST_RUN_DAYS": "14"}, None).first_run_days == 14
+    assert load_settings({**base, "BENEYLU_FIRST_RUN_DAYS": "0"}, None).first_run_days == 0
+
+
+def test_first_run_days_is_capped_by_the_detection_window(tmp_path):
+    base = {"BENEYLU_REFRESH_TOKEN": "t", "HOME": str(tmp_path)}
+    assert load_settings({**base, "BENEYLU_FIRST_RUN_DAYS": "90"}, None).first_run_days == 30
+
+
+def test_first_run_days_rejects_garbage(tmp_path):
+    base = {"BENEYLU_REFRESH_TOKEN": "t", "HOME": str(tmp_path)}
+    for value in ("abc", "-1", "7.5"):
+        with pytest.raises(ConfigError, match="BENEYLU_FIRST_RUN_DAYS"):
+            load_settings({**base, "BENEYLU_FIRST_RUN_DAYS": value}, None)

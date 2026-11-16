@@ -131,3 +131,24 @@ def test_signing_turned_on_is_an_update(svc, fake):
     svc.whats_new()
     fake._post(P + "2")["signableFor"] = [201, 202]
     assert [(p["id"], p["change"]) for p in svc.whats_new()["posts"]] == [(P + "2", "updated")]
+
+
+def test_first_run_days_widens_the_first_report(tmp_path, fake, clock):
+    from beneylu_mcp.service import BeneyluService
+    from beneylu_mcp.state import StateStore
+
+    svc = BeneyluService(fake, StateStore(tmp_path / "s16.db"), "https://school.beneylu.com", clock, first_run_days=16)
+    r = svc.whats_new()
+    assert [p["id"] for p in r["posts"]] == [P + "1", P + "2"]
+    assert [n["id"] for n in r["notifications"]] == ["n-1", "n-2"]
+
+
+def test_first_run_days_zero_reports_nothing_but_marks_seen(tmp_path, fake, clock):
+    from beneylu_mcp.service import BeneyluService
+    from beneylu_mcp.state import StateStore
+
+    svc = BeneyluService(fake, StateStore(tmp_path / "s0.db"), "https://school.beneylu.com", clock, first_run_days=0)
+    r = svc.whats_new()
+    assert r["posts"] == [] and r["notifications"] == []
+    assert svc.state.seen_fingerprint("post", P + "1") is not None
+    assert svc.whats_new()["posts"] == []
