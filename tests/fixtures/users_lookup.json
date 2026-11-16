@@ -1,0 +1,23 @@
+[
+  {
+    "id": 300,
+    "firstName": "Anne",
+    "lastName": "Martin",
+    "highRole": "TEACHER",
+    "displayName": "Mme Martin"
+  },
+  {
+    "id": 301,
+    "firstName": "Paul",
+    "lastName": "Durand",
+    "highRole": "TEACHER",
+    "displayName": "M. Durand"
+  },
+  {
+    "id": 101,
+    "firstName": "Claire",
+    "lastName": "Exemple",
+    "highRole": "PARENT",
+    "displayName": "Mme Parent Deux"
+  }
+]

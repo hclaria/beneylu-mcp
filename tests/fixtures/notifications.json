@@ -1,0 +1,34 @@
+[
+  {
+    "id": "n-1",
+    "url": "/cardboard/abc",
+    "content": "Mme Martin a publié une carte sur la pancarte \"VIE DE LA CLASSE\".",
+    "createdAt": "2026-11-15T10:00:00+01:00",
+    "read": false,
+    "appName": "CARDBOARD"
+  },
+  {
+    "id": "n-2",
+    "url": "/cma/os/app/calendar?id=1",
+    "content": "\"CONSEIL D'ECOLE\" a été ajouté à l'emploi du temps \"École Les Pins\".",
+    "createdAt": "2026-11-05T09:00:00+01:00",
+    "read": true,
+    "appName": "CALENDAR"
+  },
+  {
+    "id": "n-3",
+    "url": "/family/posts/01AAAAAAAAAAAAAAAAAAAAAAA1",
+    "content": "Mme Martin a publié un mot à signer.",
+    "createdAt": "2026-11-13T17:42:40+01:00",
+    "read": true,
+    "appName": "FAMILY"
+  },
+  {
+    "id": "n-4",
+    "url": "/cardboard/old",
+    "content": "Mme Martin a publié une carte sur la pancarte \"VIE DE L'ECOLE\".",
+    "createdAt": "2026-10-01T10:00:00+02:00",
+    "read": true,
+    "appName": "CARDBOARD"
+  }
+]

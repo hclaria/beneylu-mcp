@@ -1,0 +1,50 @@
+{
+  "posts": [
+    {
+      "id": "01AAAAAAAAAAAAAAAAAAAAAAA4",
+      "content": "<p>Rentrée.</p>",
+      "visibleAt": null,
+      "createdAt": "2026-09-23T21:38:08+02:00",
+      "authorId": 300,
+      "status": "published",
+      "type": "simple",
+      "signable": "one",
+      "contextId": 401,
+      "allowReplies": false,
+      "postAttachments": [],
+      "interaction": "signable_one",
+      "postEmbeds": [],
+      "editable": false,
+      "deletable": false,
+      "signableBy": [
+        100,
+        101
+      ],
+      "signableFor": [],
+      "signableForAndBy": {},
+      "postSignatures": [],
+      "postInteractions": [],
+      "linkedAudience": {
+        "audience": [
+          {
+            "groupId": 401
+          },
+          {
+            "userId": 201
+          }
+        ],
+        "entityId": "01AAAAAAAAAAAAAAAAAAAAAAA4",
+        "entityType": "Post"
+      },
+      "contextType": "CLASSROOM"
+    }
+  ],
+  "currentPage": "2",
+  "totalPages": 3,
+  "filters": {
+    "all": 4,
+    "archived": 0,
+    "draft": 0,
+    "published": 4
+  }
+}

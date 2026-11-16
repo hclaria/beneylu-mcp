@@ -1,0 +1,11 @@
+{
+  "posts": [],
+  "currentPage": "3",
+  "totalPages": 3,
+  "filters": {
+    "all": 4,
+    "archived": 0,
+    "draft": 0,
+    "published": 4
+  }
+}

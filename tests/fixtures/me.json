@@ -1,0 +1,18 @@
+{
+  "id": 100,
+  "username": "parentun",
+  "displayName": "M. Parent Un",
+  "highRole": "PARENT",
+  "children": [
+    {
+      "id": 201,
+      "firstName": "Alice",
+      "displayName": "Alice Exemple"
+    },
+    {
+      "id": 202,
+      "firstName": "Basile",
+      "displayName": "Basile Exemple"
+    }
+  ]
+}

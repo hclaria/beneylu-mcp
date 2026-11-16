@@ -1,0 +1,168 @@
+{
+  "posts": [
+    {
+      "id": "01AAAAAAAAAAAAAAAAAAAAAAA3",
+      "content": "<p>Mot programmé.</p>",
+      "visibleAt": "2099-01-01T08:00:00+01:00",
+      "createdAt": "2026-11-15T09:00:00+01:00",
+      "authorId": 300,
+      "status": "published",
+      "type": "simple",
+      "signable": "one",
+      "contextId": 400,
+      "allowReplies": false,
+      "postAttachments": [],
+      "interaction": "signable_one",
+      "postEmbeds": [],
+      "editable": false,
+      "deletable": false,
+      "signableBy": [
+        100,
+        101
+      ],
+      "signableFor": [
+        202
+      ],
+      "signableForAndBy": {
+        "202": [
+          100,
+          101
+        ]
+      },
+      "postSignatures": [],
+      "postInteractions": [],
+      "linkedAudience": {
+        "audience": [
+          {
+            "groupId": 400
+          },
+          {
+            "userId": 202
+          }
+        ],
+        "entityId": "01AAAAAAAAAAAAAAAAAAAAAAA3",
+        "entityType": "Post"
+      },
+      "contextType": "CLASSROOM"
+    },
+    {
+      "id": "01AAAAAAAAAAAAAAAAAAAAAAA1",
+      "content": "<p>Bonjour</p><p>Mardi : <strong>PAS</strong> de cantine d&#039;habitude.</p>",
+      "visibleAt": null,
+      "createdAt": "2026-11-13T17:42:38+01:00",
+      "authorId": 300,
+      "status": "published",
+      "type": "simple",
+      "signable": "one",
+      "contextId": 400,
+      "allowReplies": false,
+      "postAttachments": [],
+      "interaction": "signable_one",
+      "postEmbeds": [],
+      "editable": false,
+      "deletable": false,
+      "signableBy": [
+        100,
+        101
+      ],
+      "signableFor": [
+        202
+      ],
+      "signableForAndBy": {
+        "202": [
+          100,
+          101
+        ]
+      },
+      "postSignatures": [],
+      "postInteractions": [],
+      "linkedAudience": {
+        "audience": [
+          {
+            "groupId": 400,
+            "manager": true
+          },
+          {
+            "userId": 202
+          }
+        ],
+        "entityId": "01AAAAAAAAAAAAAAAAAAAAAAA1",
+        "entityType": "Post"
+      },
+      "contextType": "CLASSROOM"
+    },
+    {
+      "id": "01AAAAAAAAAAAAAAAAAAAAAAA2",
+      "content": "<p>Sortie au musée jeudi.</p>",
+      "visibleAt": "2026-11-01T07:00:00+01:00",
+      "createdAt": "2026-10-30T08:00:00+01:00",
+      "authorId": 301,
+      "status": "published",
+      "type": "simple",
+      "signable": "one",
+      "contextId": 401,
+      "allowReplies": true,
+      "postAttachments": [],
+      "interaction": "signable_one",
+      "postEmbeds": [
+        {
+          "embedId": "emb-0",
+          "entityId": "01AAAAAAAAAAAAAAAAAAAAAAA2",
+          "entityType": "Post"
+        }
+      ],
+      "editable": false,
+      "deletable": false,
+      "signableBy": [
+        100,
+        101
+      ],
+      "signableFor": [
+        201
+      ],
+      "signableForAndBy": {
+        "201": [
+          100,
+          101
+        ]
+      },
+      "postSignatures": [
+        {
+          "signedById": 101,
+          "signedForId": 201,
+          "createdAt": "2026-11-01T19:00:00+01:00",
+          "value": "signature"
+        }
+      ],
+      "postInteractions": [
+        {
+          "signedById": 101,
+          "signedForId": 201,
+          "createdAt": "2026-11-01T19:00:00+01:00",
+          "value": "signature"
+        }
+      ],
+      "linkedAudience": {
+        "audience": [
+          {
+            "groupId": 401
+          },
+          {
+            "userId": 201
+          }
+        ],
+        "entityId": "01AAAAAAAAAAAAAAAAAAAAAAA2",
+        "entityType": "Post"
+      },
+      "contextType": "CLASSROOM"
+    }
+  ],
+  "currentPage": "1",
+  "totalPages": 3,
+  "filters": {
+    "all": 4,
+    "archived": 0,
+    "draft": 0,
+    "published": 4
+  }
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "id": 400,
+    "label": "Classe GS1",
+    "type": "CLASSROOM"
+  },
+  {
+    "id": 401,
+    "label": "École Les Pins",
+    "type": "SCHOOL"
+  }
+]
