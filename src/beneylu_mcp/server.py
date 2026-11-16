@@ -15,10 +15,13 @@ from .state import StateStore
 
 INSTRUCTIONS = (
     "Accès en lecture seule à Beneylu School, la plateforme de liaison parents-école. Le cahier de liaison "
-    "(les mots de l'école) est la source principale. Pour une vérification automatique, appeler whats_new."
+    "(les mots de l'école) est la source principale. Pour une vérification automatique, appeler whats_new, "
+    "transmettre les nouveautés aux parents, puis appeler ack avec le cursor reçu."
 )
 logger = logging.getLogger("beneylu_mcp")
 READ_ONLY = ToolAnnotations(read_only_hint=True, destructive_hint=False, open_world_hint=True)
+# ack only updates the server's local state; it never writes to Beneylu.
+ACK = ToolAnnotations(read_only_hint=False, destructive_hint=False, idempotent_hint=True, open_world_hint=False)
 
 
 def _run(fn: Callable[..., Any], *args: Any) -> Any:
@@ -42,14 +45,39 @@ def build_server(service: BeneyluService) -> MCPServer:
         annotations=READ_ONLY,
         description=(
             "Vérification automatique du cahier de liaison Beneylu : renvoie les mots nouveaux ou modifiés, les "
-            "nouvelles notifications (pancarte de classe, calendrier de l'école) et le nombre de messages non lus "
-            "depuis le dernier appel. Chaque nouveauté n'est renvoyée qu'une fois. Ne marque rien comme lu côté "
-            f"école. Au tout premier appel, seuls les {service.first_run_days} derniers jours sont renvoyés. Un mot dont "
-            "pending_signature_for n'est pas vide attend une signature des parents."
+            "nouvelles notifications (pancarte de classe, calendrier de l'école) et le nombre de messages non lus, "
+            "avec un cursor. Rien n'est considéré comme transmis tant que ack(cursor) n'a pas été appelé : chaque "
+            "nouveauté non confirmée revient à l'appel suivant, avec already_reported_at (date du premier "
+            "signalement) et report_count. Appeler ack(cursor) seulement après avoir transmis les nouveautés aux "
+            "parents, et aussi quand il n'y a rien à transmettre. Ne marque rien comme lu côté école. Au tout "
+            f"premier appel, seuls les {service.first_run_days} derniers jours sont renvoyés. Un mot dont pending_signature_for "
+            "n'est pas "
+            "vide attend une signature des parents."
         ),
     )
     def whats_new() -> dict:
         return _run(service.whats_new)
+
+    @server.tool(
+        annotations=ACK,
+        description=(
+            "Confirme que les nouveautés renvoyées par whats_new avec ce cursor ont bien été transmises aux "
+            "parents : elles ne seront plus renvoyées. À appeler uniquement après la transmission. Rejouer un ack "
+            "est sans effet. N'écrit que dans l'état local du serveur, jamais sur Beneylu."
+        ),
+    )
+    def ack(cursor: str) -> dict:
+        return _run(service.ack, cursor)
+
+    @server.tool(
+        annotations=READ_ONLY,
+        description=(
+            "Nouveautés déjà renvoyées par whats_new mais pas encore confirmées par ack, avec la date du premier "
+            "signalement. Lecture de l'état local seulement : n'interroge pas Beneylu et ne change rien."
+        ),
+    )
+    def pending() -> dict:
+        return _run(service.pending)
 
     @server.tool(
         annotations=READ_ONLY,

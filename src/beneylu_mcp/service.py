@@ -1,3 +1,4 @@
+import uuid
 from collections.abc import Callable, Iterable
 from datetime import datetime, timedelta
 from typing import Any
@@ -94,33 +95,63 @@ class BeneyluService:
         unread = _as_int(self.client.get_json(f"{CHAT_PATH}/count"))
         lk = self._lookups(posts)
 
-        seen: list[tuple[str, str, str]] = []
-        new_posts = []
+        observed: list[tuple[str, str, str]] = []
+        reported: list[tuple[str, str, str, dict, str]] = []
         for raw in posts:
             fingerprint = post_fingerprint(raw)
             change = self._change("post", raw["id"], fingerprint)
-            seen.append(("post", raw["id"], fingerprint))
+            observed.append(("post", raw["id"], fingerprint))
             if change and post_date(raw) >= report_start:
-                new_posts.append({**post_from_api(raw, lk, self.base_url), "change": change})
-        new_notifications = []
+                payload = {**post_from_api(raw, lk, self.base_url), "change": change}
+                reported.append(("post", raw["id"], fingerprint, payload, post_date(raw).isoformat()))
         for raw in notifications:
             change = self._change("notification", raw["id"], raw["id"])
-            seen.append(("notification", raw["id"], raw["id"]))
+            observed.append(("notification", raw["id"], raw["id"]))
             if change and parse_dt(raw["createdAt"]) >= report_start:
-                new_notifications.append({**notification_from_api(raw, self.base_url), "change": change})
-        previous_unread = int(self.state.get("chat_unread") or 0)
+                payload = {**notification_from_api(raw, self.base_url), "change": change}
+                reported.append(("notification", raw["id"], raw["id"], payload, parse_dt(raw["createdAt"]).isoformat()))
+        acked_unread = int(self.state.get("chat_unread") or 0)
 
-        self.state.mark_seen(seen)
-        self.state.set("chat_unread", str(unread))
-        self.state.set("initialized", "1")
+        # Nothing is marked seen here: only ack(cursor) does, once the caller has passed the news on.
+        cursor = uuid.uuid4().hex
+        self.state.prune_batches(now - WINDOW)
+        pending = self.state.record_batch(cursor, now, observed, reported, unread)
+        out: dict[str, list] = {"post": [], "notification": []}
+        for item in pending:
+            again = item["report_count"] > 1
+            out[item["source"]].append(
+                {
+                    **item["payload"],
+                    "already_reported_at": item["first_reported_at"] if again else None,
+                    "report_count": item["report_count"],
+                }
+            )
         return {
             "first_run": first_run,
             "checked_at": now.isoformat(),
-            "posts": new_posts,
-            "notifications": new_notifications,
+            "cursor": cursor,
+            "posts": out["post"],
+            "notifications": out["notification"],
             "unread_messages": unread,
-            "unread_messages_increased": unread > previous_unread,
+            "unread_messages_increased": unread > acked_unread,
         }
+
+    def ack(self, cursor: str) -> dict:
+        result = self.state.ack(cursor, self._now())
+        if result is None:
+            raise BeneyluError(f"Curseur inconnu ou expiré : {cursor}. Rappeler whats_new.")
+        return result
+
+    def pending(self) -> dict:
+        items = self.state.pending_items()
+        return {
+            "posts": [self._pending_view(i) for i in items if i["source"] == "post"],
+            "notifications": [self._pending_view(i) for i in items if i["source"] == "notification"],
+        }
+
+    @staticmethod
+    def _pending_view(item: dict) -> dict:
+        return {**item["payload"], "first_reported_at": item["first_reported_at"], "report_count": item["report_count"]}
 
     def _change(self, source: str, item_id: str, fingerprint: str) -> str | None:
         previous = self.state.seen_fingerprint(source, item_id)
