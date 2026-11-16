@@ -1,0 +1,23 @@
+[project]
+name = "beneylu-mcp"
+version = "0.1.0"
+description = "Serveur MCP en lecture seule pour Beneylu School (cahier de liaison, notifications, messagerie)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["mcp", "httpx"]
+
+[project.scripts]
+beneylu-mcp = "beneylu_mcp.server:main"
+
+[dependency-groups]
+dev = ["pytest", "respx"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/beneylu_mcp"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
