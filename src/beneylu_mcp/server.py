@@ -17,6 +17,7 @@ INSTRUCTIONS = (
     "Accès en lecture seule à Beneylu School, la plateforme de liaison parents-école. Le cahier de liaison "
     "(les mots de l'école) est la source principale. Pour une vérification automatique, appeler whats_new."
 )
+logger = logging.getLogger("beneylu_mcp")
 READ_ONLY = ToolAnnotations(read_only_hint=True, destructive_hint=False, open_world_hint=True)
 
 
@@ -26,6 +27,12 @@ def _run(fn: Callable[..., Any], *args: Any) -> Any:
         return fn(*args)
     except BeneyluError as exc:
         raise ToolError(str(exc)) from None
+    except (KeyError, TypeError, AttributeError, ValueError):
+        logger.exception("unexpected Beneylu response shape")
+        raise ToolError(
+            "Beneylu a renvoyé une réponse dans un format inattendu (l'API a peut-être changé) ; "
+            "rien n'a été marqué comme vu."
+        ) from None
 
 
 def build_server(service: BeneyluService) -> MCPServer:

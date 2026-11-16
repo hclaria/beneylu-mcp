@@ -12,6 +12,7 @@ LOGIN_PATH = "/api/auth/login_check"
 REFRESH_PATH = "/api/auth/token/refresh"
 ALLOWED_POST_PATHS = frozenset({LOGIN_PATH, REFRESH_PATH, "/api/auth/users/lookup"})
 LOGIN_INTERVAL = timedelta(hours=1)
+TOKEN_REJECTED = frozenset({400, 401, 403})
 
 
 class BeneyluError(Exception):
@@ -95,7 +96,11 @@ class BeneyluClient:
 
     def _refresh(self, token: str) -> bool:
         response = self._send("POST", REFRESH_PATH, json={"refresh_token": token})
-        if response.status_code != 200 or "BEARER" not in self._http.cookies:
+        if response.status_code in TOKEN_REJECTED:
+            return False
+        if response.status_code != 200:
+            raise _unavailable(response)
+        if "BEARER" not in self._http.cookies:
             return False
         self._store_refresh_token(response, fallback=token)
         return True
@@ -110,17 +115,24 @@ class BeneyluClient:
                 f"nouvel essai possible après {retry_at:%H:%M}."
             )
         self.state.set("last_login_attempt", now.isoformat())
-        response = self._send(
-            "POST",
-            LOGIN_PATH,
-            json={
-                "login": self.settings.username,
-                "password": self.settings.password,
-                "otp": "",
-                "remember_me": True,
-                "captcha": "",
-            },
-        )
+        body = {
+            "login": self.settings.username,
+            "password": self.settings.password,
+            "otp": "",
+            "remember_me": True,
+            "captcha": "",
+        }
+        try:
+            response = self._send("POST", LOGIN_PATH, json=body)
+            if response.status_code not in TOKEN_REJECTED and response.status_code != 200:
+                raise _unavailable(response)
+        except BeneyluError:
+            # Beneylu never judged the credentials: the hourly attempt is not spent.
+            if last:
+                self.state.set("last_login_attempt", last)
+            else:
+                self.state.delete("last_login_attempt")
+            raise
         if response.status_code == 200 and "BEARER" in self._http.cookies:
             self._store_refresh_token(response, fallback=None)
             return
@@ -143,6 +155,10 @@ class BeneyluClient:
             token = None
         if token or fallback:
             self.state.set("refresh_token", token or fallback)
+
+
+def _unavailable(response: httpx.Response) -> BeneyluError:
+    return BeneyluError(f"Beneylu est indisponible (réponse {response.status_code}), réessayer plus tard.")
 
 
 def _json_message(response: httpx.Response) -> str | None:

@@ -95,3 +95,18 @@ def test_notification_from_api():
 def test_unknown_notification_app():
     n = notification_from_api({**load("notifications.json")[0], "appName": "ROLL"}, BASE)
     assert n["kind"] == "roll"
+
+
+def test_fingerprint_tracks_signing_and_attachments():
+    raw = raw_post(P + "1")
+    assert post_fingerprint(raw) != post_fingerprint({**raw, "signableFor": [201, 202]})
+    assert post_fingerprint(raw) != post_fingerprint({**raw, "postEmbeds": [{"embedId": "e-9"}]})
+    assert post_fingerprint(raw) != post_fingerprint({**raw, "postAttachments": [{"id": 7}]})
+
+
+def test_fingerprint_ignores_per_request_signed_fields():
+    raw = raw_post(P + "2")
+    first = {**raw, "postEmbeds": [{**e, "timestamp": 1, "signature": "aa"} for e in raw["postEmbeds"]]}
+    later = {**raw, "postEmbeds": [{**e, "timestamp": 2, "signature": "bb"} for e in raw["postEmbeds"]]}
+    later["linkedAudience"] = {**raw["linkedAudience"], "timestamp": 2, "signature": "bb"}
+    assert post_fingerprint(first) == post_fingerprint(later)

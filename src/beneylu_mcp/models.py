@@ -51,9 +51,23 @@ def post_date(raw: dict) -> datetime:
     return parse_dt(raw.get("visibleAt") or raw["createdAt"])
 
 
+def _item_id(item: dict) -> str:
+    # Embeds also carry a timestamp and signature regenerated on every request: never hash those.
+    for key in ("id", "embedId", "mediaId", "uuid"):
+        if item.get(key) is not None:
+            return str(item[key])
+    return "?"
+
+
 def post_fingerprint(raw: dict) -> str:
-    material = f"{raw.get('content') or ''}\x1f{raw.get('visibleAt') or ''}"
-    return hashlib.sha256(material.encode("utf-8")).hexdigest()
+    parts = [
+        raw.get("content") or "",
+        raw.get("visibleAt") or "",
+        ",".join(sorted(str(c) for c in raw.get("signableFor") or [])),
+        ",".join(sorted(_item_id(a) for a in raw.get("postAttachments") or [])),
+        ",".join(sorted(_item_id(e) for e in raw.get("postEmbeds") or [])),
+    ]
+    return hashlib.sha256("\x1f".join(parts).encode("utf-8")).hexdigest()
 
 
 @dataclass(frozen=True)

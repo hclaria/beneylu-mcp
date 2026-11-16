@@ -89,3 +89,11 @@ def test_main_without_credentials_exits_cleanly(tmp_path, monkeypatch, capsys):
     captured = capsys.readouterr()
     assert "BENEYLU_USERNAME" in captured.err
     assert captured.out == ""
+
+
+def test_unexpected_shape_is_a_french_error(server, svc, fake):
+    fake.notification_list = {"message": "maintenance"}
+    result = call(server, "whats_new")
+    assert result.is_error
+    assert "format inattendu" in text_of(result)
+    assert svc.state.get("initialized") is None

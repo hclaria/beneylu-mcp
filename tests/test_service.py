@@ -125,3 +125,9 @@ def test_never_posts_outside_lookup(svc):
     svc.account()
     svc.conversations()
     assert {path for (m, path, _) in svc.client.calls_keys() if m == "POST"} <= {"/api/auth/users/lookup"}
+
+
+def test_signing_turned_on_is_an_update(svc, fake):
+    svc.whats_new()
+    fake._post(P + "2")["signableFor"] = [201, 202]
+    assert [(p["id"], p["change"]) for p in svc.whats_new()["posts"]] == [(P + "2", "updated")]

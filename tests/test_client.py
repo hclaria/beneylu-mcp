@@ -192,3 +192,25 @@ def test_secrets_never_in_error_messages(tmp_path, mock):
 
     for message in errors:
         assert not any(s in message for s in secrets), message
+
+
+def test_refresh_5xx_keeps_token_and_skips_login(tmp_path, mock):
+    client = make_client(tmp_path)
+    client.state.set("refresh_token", "rt0")
+    mock.post("/api/auth/token/refresh").respond(503, text="<html>maintenance</html>")
+    login = mock.post("/api/auth/login_check").respond(200, **LOGIN_OK)
+    with pytest.raises(BeneyluError, match="indisponible"):
+        client.get_json("/api/family/init")
+    assert login.call_count == 0
+    assert client.state.get("refresh_token") == "rt0"
+
+
+def test_login_5xx_does_not_consume_the_hourly_attempt(tmp_path, mock):
+    client = make_client(tmp_path)
+    login = mock.post("/api/auth/login_check")
+    login.side_effect = [httpx.Response(503), httpx.Response(200, **LOGIN_OK)]
+    mock.get("/api/family/init").respond(200, json={})
+    with pytest.raises(BeneyluError, match="indisponible"):
+        client.get_json("/api/family/init")
+    assert client.get_json("/api/family/init") == {}
+    assert login.call_count == 2

@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Serveur MCP en lecture seule pour Beneylu School (cahier de liaison, notifications, messagerie)"
 readme = "README.md"
 requires-python = ">=3.12"
-dependencies = ["mcp", "httpx"]
+dependencies = ["mcp>=2.3,<3", "httpx>=0.27,<1"]
 
 [project.scripts]
 beneylu-mcp = "beneylu_mcp.server:main"
