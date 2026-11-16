@@ -10,7 +10,7 @@
    différente -> l'agent du cron se réveille avec le diff et pose les rappels.
 N'utilise jamais get_conversation (ne marque rien comme lu côté école).
 """
-import json, os, subprocess, textwrap, urllib.request, urllib.parse
+import json, os, subprocess, tempfile, textwrap, urllib.request, urllib.parse
 from datetime import datetime
 from zoneinfo import ZoneInfo
 
@@ -30,16 +30,30 @@ KIDS = {k.strip() for k in os.environ.get("BENEYLU_KIDS", "").split(",") if k.st
 
 class Mcp:
     def __init__(self):
+        # A file, not a pipe: a chatty server must never block on a full stderr buffer.
+        self.err = tempfile.TemporaryFile(mode="w+", encoding="utf-8")
         self.p = subprocess.Popen(RUN, stdin=subprocess.PIPE, stdout=subprocess.PIPE,
-                                  stderr=subprocess.DEVNULL, text=True)
+                                  stderr=self.err, text=True)
         self.n = 0
         self._req("initialize", {"protocolVersion": "2025-06-18", "capabilities": {},
                                  "clientInfo": {"name": "beneylu-cron", "version": "2"}})
         self._send({"jsonrpc": "2.0", "method": "notifications/initialized"})
 
+    def _stopped(self):
+        try:
+            self.p.wait(timeout=5)
+        except subprocess.TimeoutExpired:
+            pass
+        self.err.seek(0)
+        lines = [line.strip() for line in self.err.read().splitlines() if line.strip()]
+        return RuntimeError(f"le serveur MCP s'est arrêté : {lines[-1][:200] if lines else 'aucun détail'}")
+
     def _send(self, msg):
-        self.p.stdin.write(json.dumps(msg) + "\n")
-        self.p.stdin.flush()
+        try:
+            self.p.stdin.write(json.dumps(msg) + "\n")
+            self.p.stdin.flush()
+        except BrokenPipeError:
+            raise self._stopped() from None
 
     def _req(self, method, params):
         self.n += 1
@@ -53,7 +67,7 @@ class Mcp:
                 if "error" in d:
                     raise RuntimeError(d["error"].get("message", "erreur MCP"))
                 return d["result"]
-        raise RuntimeError("le serveur MCP s'est arrêté")
+        raise self._stopped()
 
     def tool(self, name, args=None):
         r = self._req("tools/call", {"name": name, "arguments": args or {}})
@@ -139,7 +153,10 @@ def load_log():
 
 
 def save_log(log):
-    with open(LOG + ".tmp", "w", encoding="utf-8") as f:
+    os.makedirs(os.path.dirname(LOG) or ".", exist_ok=True)
+    fd = os.open(LOG + ".tmp", os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
+    os.fchmod(fd, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as f:
         json.dump(log, f, ensure_ascii=False, indent=1)
     os.replace(LOG + ".tmp", LOG)
 
@@ -198,7 +215,9 @@ def main():
                      f"les nouveautés seront renvoyées au prochain passage")
         else:
             if msg:
+                # Saved before ack: a history that never changes would never wake the agent.
                 remember_sent(log, d)
+                save_log(log)
             mcp.tool("ack", {"cursor": d["cursor"]})
     except Exception as e:
         error = f"vérification impossible ({type(e).__name__}: {str(e)[:200]}) ; rien n'a été confirmé"
@@ -206,7 +225,10 @@ def main():
         if mcp:
             mcp.close()
     log["error"] = error
-    save_log(log)
+    try:
+        save_log(log)
+    except OSError as e:
+        log["error"] = f"{error or 'vérification faite'} ; historique non enregistré ({type(e).__name__})"
     print_monitor(log)
 
 

@@ -52,6 +52,7 @@ cronjob create
 
 | Variable du script | Rôle |
 |---|---|
+| `BENEYLU_USERNAME`, `BENEYLU_PASSWORD` | Identifiants Beneylu du serveur que lance le script. Il ne lit pas ceux de `config.yaml`. |
 | `BENEYLU_MCP_CMD` | Commande qui lance le serveur MCP, par exemple `uvx --from git+https://github.com/hclaria/beneylu-mcp beneylu-mcp`. |
 | `HERMES_ENV` | Fichier `.env` de Hermes qui contient `TELEGRAM_BOT_TOKEN` (par défaut `~/.hermes/.env`). |
 | `BENEYLU_CHATS` | Destinataires : `Nom:chat_id,Nom:chat_id`. Vide, le script signale une erreur et ne confirme rien. |
