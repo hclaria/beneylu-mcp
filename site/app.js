@@ -98,7 +98,7 @@ async function playChat() {
     scroll();
     try { await wait(ms); } finally { t.remove(); }
   };
-  const [sep1, mot, agent, sep2, morning] = $$("[data-seq]", chat);
+  const [sep1, mot, agent, ...days] = $$("[data-seq]", chat);
   resetChat();
   try {
     setStep(0);
@@ -115,11 +115,13 @@ async function playChat() {
     for (const li of $$(".reminders li", agent)) { await wait(420); li.classList.add("shown"); scroll(); }
     await wait(1300);
     setStep(3);
-    show(sep2);
-    await wait(500);
-    await typing(800);
-    show(morning);
-    await wait(600);
+    for (let i = 0; i < days.length; i += 2) {
+      show(days[i]);
+      await wait(500);
+      await typing(700);
+      show(days[i + 1]);
+      await wait(1100);
+    }
     setStep(4);
     replay.hidden = false;
   } catch (e) {

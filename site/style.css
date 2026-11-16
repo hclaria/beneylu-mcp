@@ -183,7 +183,6 @@ h1 { font-size: clamp(2.3rem, 6.2vw, 4.4rem); font-weight: 650; }
 .lock-date { margin-top: 8px; font-weight: 600; font-size: 0.95rem; opacity: 0.92; }
 .lock-time { font-size: clamp(3.6rem, 18vw, 4.7rem); font-weight: 300; line-height: 1; letter-spacing: -0.03em; margin-top: 2px; font-variant-numeric: tabular-nums; }
 .notif { margin-top: 26px; text-align: left; background: rgba(255, 255, 255, 0.62); color: #10131c; border-radius: 20px; padding: 10px 12px 12px; backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px); box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12); }
-.ghost-notif { margin: 8px 10px 0; padding: 8px 12px; opacity: 0.7; transform: scale(0.97); }
 .notif-head { display: flex; align-items: center; gap: 6px; font-size: 0.72rem; color: #3b4152; }
 .app { display: grid; place-items: center; width: 20px; height: 20px; border-radius: 6px; background: linear-gradient(160deg, #3fb0f0, #2788d8); }
 .notif-when { margin-left: auto; }
@@ -193,7 +192,6 @@ h1 { font-size: clamp(2.3rem, 6.2vw, 4.4rem); font-weight: 650; }
 
 .js .phone .notif { opacity: 0; transform: translateY(-18px) scale(0.96); }
 .js .phone.ring .notif { opacity: 1; transform: none; transition: opacity 0.45s, transform 0.6s cubic-bezier(0.2, 1.3, 0.4, 1); }
-.js .phone.ring .ghost-notif { opacity: 0.7; transform: scale(0.97); transition-delay: 0.15s; }
 .js .phone.ring { animation: buzz 0.42s ease-in-out 2; }
 @keyframes buzz { 0%, 100% { transform: rotate(2.5deg); } 25% { transform: rotate(2.5deg) translateX(-4px); } 75% { transform: rotate(2.5deg) translateX(4px); } }
 .js .lock-time.tick { animation: tick 0.5s ease-out; }
