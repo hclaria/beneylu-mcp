@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>beneylu-mcp · Le cahier de liaison qui n'oublie rien</title>
+<meta name="description" content="Un agent IA lit le cahier de liaison Beneylu et pose tout seul les rappels qu'il faut, le jour qu'il faut. Donne ce dépôt à ton agent Hermes : il s'installe lui-même.">
+<meta name="theme-color" content="#fbf8f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#17221e" media="(prefers-color-scheme: dark)">
+<link rel="canonical" href="https://hclaria.github.io/beneylu-mcp/">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="fr_FR">
+<meta property="og:url" content="https://hclaria.github.io/beneylu-mcp/">
+<meta property="og:title" content="Le mot arrive mardi à 13h. Le rappel sonne jeudi à 7h.">
+<meta property="og:description" content="Un agent IA lit le cahier de liaison Beneylu et pose tout seul les rappels qu'il faut, le jour qu'il faut.">
+<meta property="og:image" content="https://hclaria.github.io/beneylu-mcp/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Un écran de téléphone à 7h00 affiche un rappel : sortie au musée aujourd'hui, prévoir un pique-nique.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://hclaria.github.io/beneylu-mcp/og.png">
+<script>
+(function () {
+  var d = document.documentElement;
+  try { var t = localStorage.getItem("theme"); if (t === "light" || t === "dark") d.dataset.theme = t; } catch (e) {}
+  var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  d.classList.add(still || !("IntersectionObserver" in window) ? "static" : "js");
+  setTimeout(function () { if (!window.__appReady && d.classList.contains("js")) { d.classList.remove("js"); d.classList.add("static"); } }, 3000);
+})();
+</script>
+<link rel="stylesheet" href="style.css">
+<script src="app.js" defer></script>
+</head>
+<body>
+<a class="skip" href="#contenu">Aller au contenu</a>
+
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="brand" href="#top" aria-label="beneylu-mcp, retour en haut">
+      <img src="favicon.svg" alt="" width="28" height="28">
+      <span>beneylu-mcp</span>
+    </a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#scene">La scène</a>
+      <a href="#histoire">L'histoire</a>
+      <a href="#installer">Installer</a>
+    </nav>
+    <div class="nav-actions">
+      <button class="theme" id="theme-toggle" type="button"><span class="icon" aria-hidden="true">🌙</span><span class="label">Tableau</span></button>
+      <a class="gh" href="https://github.com/hclaria/beneylu-mcp" aria-label="Le code sur GitHub">
+        <svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path fill="currentColor" d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38v-1.33c-2.23.48-2.7-1.07-2.7-1.07-.36-.92-.89-1.17-.89-1.17-.73-.5.06-.49.06-.49.8.06 1.23.83 1.23.83.72 1.22 1.87.87 2.33.66.07-.52.28-.87.5-1.07-1.78-.2-3.65-.89-3.65-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.6 7.6 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.66 3.95.29.25.54.73.54 1.48v2.2c0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+        <span>GitHub</span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main id="contenu">
+
+<!-- 1. Accroche -->
+<section class="hero" id="top">
+  <div class="wrap hero-in">
+    <div class="hero-copy reveal">
+      <p class="eyebrow">Beneylu School × ton agent IA</p>
+      <h1>Le mot arrive mardi à 13h.<br>Le rappel sonne <span class="mark">jeudi à 7h.</span></h1>
+      <p class="lead">Un agent lit le cahier de liaison Beneylu et pose tout seul les rappels qu'il faut, le jour qu'il faut. Sortie, pas de cantine, autorisation à rendre : tu n'as plus rien à retenir.</p>
+      <p class="lead small">Et l'installation ? Tu donnes ce dépôt à ton agent Hermes. Il s'en occupe.</p>
+      <div class="ctas">
+        <a class="btn primary" href="#installer">Donne-le à ton agent</a>
+        <a class="btn ghost" href="#scene">Voir la scène <span aria-hidden="true">↓</span></a>
+      </div>
+      <ul class="proofs">
+        <li><span aria-hidden="true">📖</span> Lecture seule</li>
+        <li><span aria-hidden="true">🤫</span> 0 token les jours calmes</li>
+        <li><span aria-hidden="true">🔓</span> Code sur GitHub</li>
+      </ul>
+    </div>
+
+    <div class="hero-visual">
+      <div class="phone" role="img" aria-label="Écran verrouillé d'un téléphone, jeudi 26 novembre à 7h00 : rappel de la sortie au musée pour Lou, prévoir un pique-nique et une tenue chaude.">
+        <div class="screen" aria-hidden="true">
+          <div class="island"></div>
+          <svg class="lock" viewBox="0 0 24 24" width="16" height="16"><path fill="currentColor" d="M12 2a5 5 0 0 0-5 5v3H6a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8a2 2 0 0 0-2-2h-1V7a5 5 0 0 0-5-5Zm-3 8V7a3 3 0 1 1 6 0v3H9Z"/></svg>
+          <p class="lock-date">Jeudi 26 novembre</p>
+          <p class="lock-time">07:00</p>
+          <div class="notif">
+            <div class="notif-head">
+              <span class="app"><svg viewBox="0 0 24 24" width="14" height="14"><path fill="#fff" d="M21.5 4.2 2.9 11.4c-1 .4-1 1.6 0 1.9l4.6 1.5 1.8 5.6c.2.7 1.1.9 1.6.4l2.6-2.4 4.8 3.5c.6.4 1.4.1 1.6-.6l3.1-15.3c.2-.9-.6-1.6-1.5-1.3ZM9.7 14.3l8.6-7.8-6.9 9.1-.3 3-1.4-4.3Z"/></svg></span>
+              <span class="notif-app">Telegram</span>
+              <span class="notif-when">maintenant</span>
+            </div>
+            <p class="notif-title">Hermes</p>
+            <p class="notif-text">🎒 Sortie au musée aujourd'hui pour Lou (CE1). Pique-nique et tenue chaude !</p>
+          </div>
+          <div class="notif ghost-notif">
+            <p class="notif-text">⏰ 1 rappel prévu demain</p>
+          </div>
+          <div class="home-bar"></div>
+        </div>
+      </div>
+      <p class="hand note-arrow" aria-hidden="true">↑ pile au bon moment</p>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Le problème -->
+<section class="section problem" aria-labelledby="pb-title">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow">Le problème</p>
+      <h2 id="pb-title">Chaque mot cache une date. Et une date, ça s'oublie.</h2>
+      <p class="lead">Le mot arrive en pleine journée. Tu le lis le soir, entre le bain et la vaisselle. Tu te dis « je m'en souviendrai ». Puis vient le matin de la sortie, et le pique-nique est resté dans le frigo.</p>
+    </header>
+
+    <div class="fridge reveal" role="img" aria-label="Une porte de frigo couverte de mots oubliés : pique-nique, autorisation, photo de classe, cantine.">
+      <div class="postit" style="--r:-4deg;--i:0" aria-hidden="true"><span class="magnet" style="--m:#e5574b"></span>Pique-nique pour la sortie !!<span class="stamp">Oublié</span></div>
+      <div class="postit" style="--r:3deg;--i:1" aria-hidden="true"><span class="magnet" style="--m:#3e74e0"></span>Autorisation à signer avant lundi<span class="stamp">Oublié</span></div>
+      <div class="postit pink" style="--r:-2deg;--i:2" aria-hidden="true"><span class="magnet" style="--m:#2f9e6e"></span>Photo de classe : commander avant vendredi<span class="stamp">Oublié</span></div>
+      <div class="postit" style="--r:5deg;--i:3" aria-hidden="true"><span class="magnet" style="--m:#f0a830"></span>Mardi : pas de cantine<span class="stamp">Oublié</span></div>
+      <div class="postit blue" style="--r:-5deg;--i:4" aria-hidden="true"><span class="magnet" style="--m:#e5574b"></span>Jeudi : tenue de sport</div>
+      <div class="postit" style="--r:2deg;--i:5" aria-hidden="true"><span class="magnet" style="--m:#3e74e0"></span>Grève vendredi, pas d'accueil le matin</div>
+    </div>
+
+    <p class="insight reveal">L'info, tu l'as : elle est dans Beneylu.<br><strong>Ce qui manque, c'est le bon moment.</strong></p>
+  </div>
+</section>
+
+<!-- 3. La scène -->
+<section class="section scene" id="scene" aria-labelledby="scene-title">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow">La scène</p>
+      <h2 id="scene-title">Mardi, 12h52. La maîtresse publie un mot.</h2>
+      <p class="lead">Regarde ce qui se passe ensuite. Personne ne touche à rien.</p>
+    </header>
+
+    <div class="scene-grid">
+      <ol class="steps" aria-label="Déroulé">
+        <li><span class="t">12h52</span><span>Mme Rivière publie un mot sur Beneylu.</span></li>
+        <li><span class="t">13h00</span><span>Le script le voit et l'envoie aux deux parents. Il ne le confirme qu'une fois bien reçu.</span></li>
+        <li><span class="t">13h00</span><span>L'agent se réveille, lit le mot, repère les dates et pose les rappels.</span></li>
+        <li><span class="t">Jeudi 7h00</span><span>Le rappel tombe pile au bon moment.</span></li>
+      </ol>
+
+      <div class="chat" aria-label="Conversation Telegram avec l'agent Hermes">
+        <div class="chat-top">
+          <span class="avatar" aria-hidden="true">H</span>
+          <div><p class="chat-name">Hermes</p><p class="chat-sub">bot de la famille Martin</p></div>
+          <button class="replay" id="replay" type="button" hidden>↺ Rejouer</button>
+        </div>
+        <div class="chat-body" id="chat-body">
+          <p class="sep" data-seq>mardi 17 novembre</p>
+
+          <div class="bubble" data-seq>
+            <p><strong>🏫 Beneylu : du nouveau</strong></p>
+            <p>📒 Nouveau mot : Lou (Mme Rivière, 17/11 à 12h52)</p>
+            <p class="quote">Chers parents, la classe de CE1 ira au musée des Beaux-Arts le <span class="date">jeudi 26 novembre</span>. Prévoir un pique-nique et une tenue chaude. Merci de rendre l'autorisation signée <span class="date">avant le lundi 23 novembre</span>.</p>
+            <p>✍️ Signature attendue pour Lou</p>
+            <p class="time">13:00</p>
+          </div>
+
+          <div class="bubble" data-seq>
+            <p>J'ai repéré <strong>2 dates</strong> dans le mot de Mme Rivière. <strong>3 rappels posés</strong> pour vous deux :</p>
+            <ul class="reminders">
+              <li><span class="when">dim. 22/11, 7h</span> veille : rendre l'autorisation signée</li>
+              <li><span class="when">lun. 23/11, 7h</span> dernier jour pour l'autorisation</li>
+              <li><span class="when">jeu. 26/11, 7h</span> sortie au musée, pique-nique et tenue chaude</li>
+            </ul>
+            <p class="time">13:00</p>
+          </div>
+
+          <p class="sep" data-seq>jeudi 26 novembre</p>
+
+          <div class="bubble" data-seq>
+            <p>🎒 <strong>Sortie au musée aujourd'hui</strong> pour Lou (CE1). Pique-nique et tenue chaude ! Bonne journée 🙂</p>
+            <p class="time">07:00</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 4. La règle et la semaine -->
+<section class="section week" id="semaine" aria-labelledby="week-title">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow">La règle</p>
+      <h2 id="week-title">Un mot, deux dates, trois rappels.</h2>
+      <p class="lead">L'agent applique la règle que tu appliquerais toi-même, si tu avais le temps.</p>
+    </header>
+
+    <div class="rules">
+      <article class="rule reveal">
+        <p class="rule-ico" aria-hidden="true">📅</p>
+        <h3>Un événement</h3>
+        <p class="rule-what">Un rappel <strong>le matin même</strong>, à 7h.</p>
+        <p class="muted">Sortie, pas de cantine, grève, tenue de sport, photo de classe, réunion.</p>
+      </article>
+      <article class="rule reveal">
+        <p class="rule-ico" aria-hidden="true">⏳</p>
+        <h3>Une date limite</h3>
+        <p class="rule-what">Un rappel <strong>la veille</strong> et un <strong>le dernier jour</strong>, à 7h.</p>
+        <p class="muted">Autorisation à rendre, commande, inscription, paiement.</p>
+      </article>
+    </div>
+
+    <div class="cal reveal" role="img" aria-label="Frise du mardi 17 au jeudi 26 novembre : le mot arrive le 17, rappels le dimanche 22, le lundi 23 et le jeudi 26 à 7h.">
+      <div class="day" aria-hidden="true"><p class="d"><span>mar.</span>17</p><p class="hand arrive">📒 le mot arrive</p></div>
+      <div class="day" aria-hidden="true"><p class="d"><span>mer.</span>18</p></div>
+      <div class="day" aria-hidden="true"><p class="d"><span>jeu.</span>19</p></div>
+      <div class="day" aria-hidden="true"><p class="d"><span>ven.</span>20</p></div>
+      <div class="day we" aria-hidden="true"><p class="d"><span>sam.</span>21</p></div>
+      <div class="day we" aria-hidden="true"><p class="d"><span>dim.</span>22</p><p class="chip" style="--i:0"><span>7:00</span>✍️ Veille : autorisation</p></div>
+      <div class="day" aria-hidden="true"><p class="d"><span>lun.</span>23</p><p class="chip" style="--i:1"><span>7:00</span>✍️ Dernier jour</p></div>
+      <div class="day" aria-hidden="true"><p class="d"><span>mar.</span>24</p></div>
+      <div class="day" aria-hidden="true"><p class="d"><span>mer.</span>25</p></div>
+      <div class="day" aria-hidden="true"><p class="d"><span>jeu.</span>26</p><p class="chip event" style="--i:2"><span>7:00</span>🎒 Sortie au musée</p></div>
+    </div>
+
+    <div class="marquee" aria-label="Ce que l'agent repère dans les mots">
+      <ul class="track">
+        <li>pas de cantine</li><li>sortie scolaire</li><li>grève</li><li>tenue de sport</li><li>photo de classe</li><li>réunion parents</li><li>inscription</li><li>paiement</li><li>autorisation</li><li>kermesse</li><li>piscine</li><li>carnaval</li><li>conseil d'école</li><li>vacances</li>
+      </ul>
+      <ul class="track dup" aria-hidden="true">
+        <li>pas de cantine</li><li>sortie scolaire</li><li>grève</li><li>tenue de sport</li><li>photo de classe</li><li>réunion parents</li><li>inscription</li><li>paiement</li><li>autorisation</li><li>kermesse</li><li>piscine</li><li>carnaval</li><li>conseil d'école</li><li>vacances</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- 5. L'histoire -->
+<section class="section story" id="histoire" aria-labelledby="story-title">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow">L'histoire vraie</p>
+      <h2 id="story-title">Je n'ai pas codé les rappels.<br><span class="mark">Mon agent les a inventés.</span></h2>
+      <p class="lead">Ce dépôt donne à un agent l'accès au cahier de liaison. Le reste, c'est un agent Hermes qui l'a conçu, construit et testé tout seul, à partir d'une seule phrase.</p>
+    </header>
+
+    <div class="thread reveal">
+      <div class="msg me"><p>À chaque fois que tu vois une date clé dans un mot, pose un rappel pour le jour même.</p></div>
+      <div class="msg bot"><p>Le cron Beneylu tourne sans agent, avec un simple script : il transmet les mots, mais il ne peut pas en extraire les dates.</p><p>Je propose de réveiller un agent <strong>seulement quand le script a envoyé du nouveau</strong>. Les jours sans nouveauté, il ne coûte aucun token. Je le mets en place ?</p></div>
+      <div class="msg me"><p>oui</p></div>
+      <div class="msg bot"><p>C'est en place. J'ai testé avec un faux mot réaliste : <strong>3 rappels posés au bon jour</strong>, aucun doublon. Puis j'ai tout nettoyé : l'autre parent ne recevra rien de ce test.</p></div>
+      <p class="thread-note">Échange réel, raccourci, prénoms retirés.</p>
+    </div>
+
+    <aside class="aside reveal">
+      <p class="hand">Le détail qui m'a bluffé</p>
+      <p>Son premier test n'a rien donné : le faux mot portait la mention « test technique, à ignorer », et l'agent du cron l'a ignoré, comme on le lui demandait. Il l'a compris, a recommencé avec un mot réaliste, puis a vérifié et supprimé les rappels avant qu'ils ne partent.</p>
+    </aside>
+  </div>
+</section>
+
+<!-- 6. Comment ça marche -->
+<section class="section how" id="comment" aria-labelledby="how-title">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow">Comment ça marche</p>
+      <h2 id="how-title">Malin quand il faut. Silencieux le reste du temps.</h2>
+    </header>
+
+    <ol class="pipe reveal">
+      <li><span class="ico" aria-hidden="true">🏫</span><strong>Beneylu</strong><span>le cahier de liaison</span></li>
+      <li><span class="ico" aria-hidden="true">🔌</span><strong>beneylu-mcp</strong><span>en lecture seule</span></li>
+      <li><span class="ico" aria-hidden="true">⏱️</span><strong>Un script</strong><span>passe 6 fois par jour</span></li>
+    </ol>
+
+    <div class="fork">
+      <div class="branch calm reveal">
+        <p class="branch-when">Rien de nouveau <span class="muted">(presque toujours)</span></p>
+        <p class="branch-what">Silence. <strong>0 token.</strong></p>
+      </div>
+      <div class="branch busy reveal">
+        <p class="branch-when">Un mot arrive</p>
+        <p class="branch-what">📨 Le mot part sur Telegram aux deux parents.</p>
+        <p class="branch-what">🧠 L'agent se réveille et pose les rappels.</p>
+      </div>
+    </div>
+
+    <figure class="runs-fig reveal">
+      <ol class="runs">
+        <li style="--i:0"><span class="dot"></span><span class="h">7h</span><span class="c">0 token</span></li>
+        <li style="--i:1"><span class="dot"></span><span class="h">10h</span><span class="c">0 token</span></li>
+        <li style="--i:2" class="lit"><span class="dot"></span><span class="h">13h</span><span class="c">1 mot : agent réveillé</span></li>
+        <li style="--i:3"><span class="dot"></span><span class="h">16h</span><span class="c">0 token</span></li>
+        <li style="--i:4"><span class="dot"></span><span class="h">19h</span><span class="c">0 token</span></li>
+        <li style="--i:5"><span class="dot"></span><span class="h">22h</span><span class="c">0 token</span></li>
+      </ol>
+      <figcaption>Une journée type : l'agent ne se réveille qu'une fois. Les autres passages ne coûtent rien.</figcaption>
+    </figure>
+  </div>
+</section>
+
+<!-- 7. Confiance -->
+<section class="section trust" id="confiance" aria-labelledby="trust-title">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow">Confiance</p>
+      <h2 id="trust-title">Ce qu'il fait. Ce qu'il ne fera jamais.</h2>
+    </header>
+    <div class="cards">
+      <article class="card reveal"><p class="card-ico" aria-hidden="true">📖</p><h3>Lecture seule</h3><p>Le serveur n'écrit jamais sur Beneylu. Il refuse toute requête d'écriture en dehors de la connexion.</p></article>
+      <article class="card reveal"><p class="card-ico" aria-hidden="true">👀</p><h3>Rien n'est marqué « lu »</h3><p>L'école ne voit pas un mot comme lu parce qu'un robot est passé. Seul un parent qui le demande ouvre une conversation.</p></article>
+      <article class="card reveal"><p class="card-ico" aria-hidden="true">📨</p><h3>Envoi garanti</h3><p>Un mot n'est confirmé qu'une fois reçu par chaque parent. Sinon, il revient au passage suivant.</p></article>
+      <article class="card reveal"><p class="card-ico" aria-hidden="true">🤫</p><h3>Économe</h3><p>Le modèle ne travaille que quand un mot arrive. Les jours calmes ne coûtent rien.</p></article>
+      <article class="card reveal"><p class="card-ico" aria-hidden="true">🏠</p><h3>Ton état reste chez toi</h3><p>Session et historique dans un fichier local, lisible par toi seul. Pas de service tiers entre toi et l'école.</p></article>
+      <article class="card honest reveal"><p class="card-ico" aria-hidden="true">🤝</p><h3>En toute transparence</h3><p>Le texte des nouveaux mots passe par Telegram et par le fournisseur de ton LLM. Les rappels sont posés par un modèle : fiable en pratique, pas garanti. Le mot complet t'arrive de toute façon.</p></article>
+    </div>
+  </div>
+</section>
+
+<!-- 8. Installer -->
+<section class="section install" id="installer" aria-labelledby="install-title">
+  <div class="wrap">
+    <header class="sec-head reveal">
+      <p class="eyebrow">Installer</p>
+      <h2 id="install-title">Donne ce lien à ton agent.<br><span class="mark">Il fait le reste.</span></h2>
+      <p class="lead">Colle ce message dans ta conversation avec Hermes. Il lit le dépôt, s'installe le serveur, te pose ses questions, met en place la surveillance et teste les rappels avant de te dire que c'est prêt.</p>
+    </header>
+
+    <figure class="code prompt reveal">
+      <figcaption>Message pour ton agent</figcaption>
+      <button class="copy" type="button">Copier</button>
+<pre><code>Voici un serveur MCP pour le cahier de liaison Beneylu de l'école : https://github.com/hclaria/beneylu-mcp
+
+Installe-le, puis mets en place une surveillance qui nous transmet les nouveaux mots, à moi et à l'autre parent, et qui pose des rappels pour chaque date importante : le matin même pour un événement, la veille et le dernier jour pour une date limite.
+
+Inspire-toi de examples/hermes/, adapte-le à ta configuration, et teste avec un faux mot réaliste avant de me dire que c'est prêt.</code></pre>
+    </figure>
+
+    <div class="expect">
+      <div class="reveal">
+        <h3>Ce qu'il va te demander</h3>
+        <ul class="checks">
+          <li>Tes identifiants Beneylu (compte parent).</li>
+          <li>Qui doit recevoir les mots et les rappels.</li>
+          <li>De valider son plan avant de le mettre en place.</li>
+        </ul>
+      </div>
+      <div class="reveal">
+        <h3>À savoir avant de te lancer</h3>
+        <p><code>examples/hermes/</code> contient la configuration que l'agent a trouvée pour notre famille. Ce sont des <strong>pistes</strong>, pas une installation clé en main : ton agent les adapte à sa version de Hermes, à ta messagerie et à ta famille. Souvent, il y arrive seul du premier coup. Parfois, il aura besoin de toi.</p>
+      </div>
+    </div>
+
+    <details class="manual reveal">
+      <summary>Tu préfères le faire à la main ?</summary>
+      <div class="manual-in">
+        <p>Il te faut <a href="https://github.com/NousResearch/hermes-agent">Hermes Agent</a> relié à Telegram, <a href="https://docs.astral.sh/uv/">uv</a> et un compte parent Beneylu.</p>
+        <h4><span class="n">1</span> Brancher le serveur MCP</h4>
+        <p>Dans <code>~/.hermes/config.yaml</code>, puis <code>/reload-mcp</code> dans une session Hermes :</p>
+        <figure class="code">
+          <button class="copy" type="button">Copier</button>
+<pre><code>mcp_servers:
+  beneylu:
+    command: "/chemin/complet/vers/uvx"
+    args: ["--from", "git+https://github.com/hclaria/beneylu-mcp", "beneylu-mcp"]
+    env:
+      BENEYLU_USERNAME: "..."
+      BENEYLU_PASSWORD: "..."
+      PATH: "/usr/bin:/bin"
+    timeout: 60</code></pre>
+        </figure>
+        <h4><span class="n">2</span> Adapter le script de surveillance</h4>
+        <figure class="code">
+          <button class="copy" type="button">Copier</button>
+<pre><code>curl -o ~/.hermes/scripts/beneylu_whats_new.py \
+  https://raw.githubusercontent.com/hclaria/beneylu-mcp/main/examples/hermes/beneylu_whats_new.py</code></pre>
+        </figure>
+        <p>Variables à régler : <code>BENEYLU_MCP_CMD</code>, <code>BENEYLU_CHATS</code>, <code>BENEYLU_KIDS</code>. Le détail est dans la <a href="https://github.com/hclaria/beneylu-mcp/tree/main/examples/hermes">recette</a>.</p>
+        <h4><span class="n">3</span> Créer le cron « surveillance »</h4>
+        <p>Avec la consigne <a href="https://github.com/hclaria/beneylu-mcp/blob/main/examples/hermes/cron_prompt.md"><code>cron_prompt.md</code></a>, dont tu remplaces les <code>&lt;...&gt;</code> :</p>
+        <figure class="code">
+          <button class="copy" type="button">Copier</button>
+<pre><code>cronjob create
+  schedule: "0 6,9,12,15,18,21 * * *"
+  monitor:  beneylu_whats_new.py
+  prompt:   (contenu de cron_prompt.md)
+  deliver:  telegram:&lt;CHAT_ID_ADMIN&gt;</code></pre>
+        </figure>
+      </div>
+    </details>
+  </div>
+</section>
+
+<!-- 9. FAQ -->
+<section class="section faq" aria-labelledby="faq-title">
+  <div class="wrap narrow">
+    <header class="sec-head reveal">
+      <p class="eyebrow">Questions</p>
+      <h2 id="faq-title">Les questions qu'on pose à la sortie de l'école.</h2>
+    </header>
+    <details><summary>Ça marche avec l'école de mes enfants ?</summary><p>Si l'école utilise Beneylu School et que tu as un compte parent, oui. Le serveur lit le cahier de liaison, les notifications (pancarte, calendrier) et la messagerie.</p></details>
+    <details><summary>C'est un produit Beneylu ?</summary><p>Non. C'est un projet personnel, sans lien avec Beneylu. Beneylu n'a pas d'API publique : le serveur utilise l'API interne du site, qui peut changer sans prévenir.</p></details>
+    <details><summary>L'école va voir que j'ai « lu » les mots ?</summary><p>Non. La vérification automatique ne marque rien comme lu. Seule la lecture d'une conversation, à la demande d'un parent, peut le faire.</p></details>
+    <details><summary>Et si l'agent rate une date ?</summary><p>Le mot complet t'arrive quand même sur Telegram dès qu'il est publié. Le rappel est un filet en plus, pas le seul.</p></details>
+    <details><summary>Combien ça coûte ?</summary><p>Le serveur est gratuit. Le modèle n'est sollicité que quand un mot arrive : le reste du temps, un simple script tourne, sans aucun token.</p></details>
+    <details><summary>Je donne mes identifiants à l'agent ?</summary><p>Il en a besoin pour se connecter à Beneylu. Si tu préfères qu'ils ne passent pas par la conversation, mets-les toi-même dans la configuration de Hermes (étape 1 de l'installation à la main). Ils restent sur ta machine.</p></details>
+    <details><summary>Je n'utilise pas Hermes.</summary><p>Le serveur MCP marche avec n'importe quel client MCP (Claude, par exemple) pour poser des questions : « il y a quoi demain pour Lou ? ». Les rappels automatiques s'appuient sur les crons de Hermes ; un autre agent qui sait planifier des tâches peut s'inspirer de la même piste.</p></details>
+  </div>
+</section>
+
+<!-- 10. Appel final -->
+<section class="final">
+  <div class="wrap">
+    <div class="final-card reveal">
+      <h2>Le prochain mot arrive peut-être demain.</h2>
+      <p>Cette fois, c'est ton agent qui s'en souviendra.</p>
+      <div class="ctas">
+        <a class="btn light" href="#installer">Donne-le à ton agent</a>
+        <a class="btn outline" href="https://github.com/hclaria/beneylu-mcp">⭐ Voir sur GitHub</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap foot-in">
+    <p>Projet non officiel, sans lien avec Beneylu. Les prénoms, l'école et les mots de la scène sont fictifs.</p>
+    <p>Fait par un parent, avec un agent qui n'oublie rien.</p>
+  </div>
+</footer>
+</body>
+</html>
