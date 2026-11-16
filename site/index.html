@@ -62,7 +62,7 @@
 <section class="hero" id="top">
   <div class="wrap hero-in">
     <div class="hero-copy reveal">
-      <p class="eyebrow">Beneylu School × ton agent IA</p>
+      <p class="eyebrow">Pour les parents sur Beneylu School</p>
       <h1>Le mot arrive mardi à 13h.<br>Le rappel sonne <span class="mark">jeudi à 7h.</span></h1>
       <p class="lead">Un agent lit le cahier de liaison Beneylu et pose tout seul les rappels qu'il faut, le jour qu'il faut. Sortie, pas de cantine, autorisation à rendre : un super-pouvoir de parent, pour (presque) ne plus rien oublier.</p>
       <p class="lead small">Et l'installation ? Tu donnes ce dépôt à ton agent Hermes. Il s'en occupe.</p>
@@ -152,7 +152,7 @@
           <div class="bubble" data-seq>
             <p><strong>🏫 Beneylu : du nouveau</strong></p>
             <p>📒 Nouveau mot : Lou (Mme Rivière, 17/11 à 12h52)</p>
-            <p class="quote">Chers parents, la classe de CE1 ira au musée des Beaux-Arts le <span class="date">jeudi 26 novembre</span>. Prévoir un pique-nique et une tenue chaude. Merci de rendre l'autorisation signée <span class="date">avant le lundi 23 novembre</span>.</p>
+            <p class="quote">Chers parents, la classe de CE1 ira au musée des Beaux-Arts le <span class="date">jeudi 26 novembre</span>. Prévoir un pique-nique et une tenue chaude. Merci de rendre l'autorisation signée <span class="date">au plus tard le lundi 23 novembre</span>.</p>
             <p>✍️ Signature attendue pour Lou</p>
             <p class="time">13:00</p>
           </div>
@@ -198,7 +198,7 @@
   <div class="wrap">
     <header class="sec-head reveal">
       <p class="eyebrow">La règle</p>
-      <h2 id="week-title">Un mot, deux dates, trois rappels.</h2>
+      <h2 id="week-title">Le bon moment, à chaque fois.</h2>
       <p class="lead">L'agent applique la règle que tu appliquerais toi-même, si tu avais le temps.</p>
     </header>
 
@@ -315,14 +315,16 @@
 
 Installe-le, puis mets en place une surveillance qui nous transmet les nouveaux mots, à moi et à l'autre parent, et qui pose des rappels pour chaque date importante : le matin même pour un événement, la veille et le dernier jour pour une date limite.
 
-Inspire-toi de examples/hermes/, adapte-le à ta configuration, et teste avec un faux mot réaliste avant de me dire que c'est prêt.</code></pre>
+Inspire-toi de examples/hermes/, adapte-le à ta configuration, et teste avec un faux mot réaliste avant de me dire que c'est prêt.
+
+Ne me demande pas mon mot de passe Beneylu dans la conversation : dis-moi où le mettre moi-même.</code></pre>
     </figure>
 
     <div class="expect">
       <div class="reveal">
         <h3>Ce qu'il va te demander</h3>
         <ul class="checks">
-          <li>Tes identifiants Beneylu (compte parent).</li>
+          <li>Tes identifiants Beneylu. Le plus sûr : les mettre toi-même dans sa configuration, pas dans la conversation.</li>
           <li>Qui doit recevoir les mots et les rappels.</li>
           <li>De valider son plan avant de le mettre en place.</li>
         </ul>
@@ -354,10 +356,10 @@ Inspire-toi de examples/hermes/, adapte-le à ta configuration, et teste avec un
         <h4><span class="n">2</span> Adapter le script de surveillance</h4>
         <figure class="code">
           <button class="copy" type="button">Copier</button>
-<pre><code>curl -o ~/.hermes/scripts/beneylu_whats_new.py \
+<pre><code>curl --create-dirs -o ~/.hermes/scripts/beneylu_whats_new.py \
   https://raw.githubusercontent.com/hclaria/beneylu-mcp/main/examples/hermes/beneylu_whats_new.py</code></pre>
         </figure>
-        <p>Variables à régler : <code>BENEYLU_MCP_CMD</code>, <code>BENEYLU_CHATS</code>, <code>BENEYLU_KIDS</code>. Le détail est dans la <a href="https://github.com/hclaria/beneylu-mcp/tree/main/examples/hermes">recette</a>.</p>
+        <p>Variables à régler : <code>BENEYLU_MCP_CMD</code>, <code>BENEYLU_CHATS</code>, <code>BENEYLU_KIDS</code>, et tes identifiants (<code>BENEYLU_USERNAME</code>, <code>BENEYLU_PASSWORD</code>) pour le serveur que lance le script. Le détail est dans la <a href="https://github.com/hclaria/beneylu-mcp/tree/main/examples/hermes">recette</a>.</p>
         <h4><span class="n">3</span> Créer le cron « surveillance »</h4>
         <p>Avec la consigne <a href="https://github.com/hclaria/beneylu-mcp/blob/main/examples/hermes/cron_prompt.md"><code>cron_prompt.md</code></a>, dont tu remplaces les <code>&lt;...&gt;</code> :</p>
         <figure class="code">
@@ -383,9 +385,9 @@ Inspire-toi de examples/hermes/, adapte-le à ta configuration, et teste avec un
     <details><summary>Ça marche avec l'école de mes enfants ?</summary><p>Si l'école utilise Beneylu School et que tu as un compte parent, oui. Le serveur lit le cahier de liaison, les notifications (pancarte, calendrier) et la messagerie.</p></details>
     <details><summary>C'est un produit Beneylu ?</summary><p>Non. C'est un projet personnel, sans lien avec Beneylu. Beneylu n'a pas d'API publique : le serveur utilise l'API interne du site, qui peut changer sans prévenir.</p></details>
     <details><summary>L'école va voir que j'ai « lu » les mots ?</summary><p>Non. La vérification automatique ne marque rien comme lu. Seule la lecture d'une conversation, à la demande d'un parent, peut le faire.</p></details>
-    <details><summary>Et si l'agent rate une date ?</summary><p>Le mot complet t'arrive quand même sur Telegram dès qu'il est publié. Le rappel est un filet en plus, pas le seul.</p></details>
+    <details><summary>Et si l'agent rate une date ?</summary><p>Le mot complet t'arrive quand même sur Telegram, quelques heures au plus après sa publication. Le rappel est un filet en plus, pas le seul.</p></details>
     <details><summary>Combien ça coûte ?</summary><p>Le serveur est gratuit. Le modèle n'est sollicité que quand un mot arrive : le reste du temps, un simple script tourne, sans aucun token.</p></details>
-    <details><summary>Je donne mes identifiants à l'agent ?</summary><p>Il en a besoin pour se connecter à Beneylu. Si tu préfères qu'ils ne passent pas par la conversation, mets-les toi-même dans la configuration de Hermes (étape 1 de l'installation à la main). Ils restent sur ta machine.</p></details>
+    <details><summary>Je donne mes identifiants à l'agent ?</summary><p>Il en a besoin pour se connecter à Beneylu. Tapés dans la conversation, ils passent par Telegram et par le fournisseur de ton LLM. Le plus sûr est de les mettre toi-même dans la configuration de Hermes (étape 1 de l'installation à la main) : ils restent alors sur ta machine.</p></details>
     <details><summary>Je n'utilise pas Hermes.</summary><p>Le serveur MCP marche avec n'importe quel client MCP (Claude, par exemple) pour poser des questions : « il y a quoi demain pour Lou ? ». Les rappels automatiques s'appuient sur les crons de Hermes ; un autre agent qui sait planifier des tâches peut s'inspirer de la même piste.</p></details>
   </div>
 </section>
