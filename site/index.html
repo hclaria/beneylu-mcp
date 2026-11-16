@@ -43,7 +43,7 @@
     </a>
     <nav class="nav-links" aria-label="Sections">
       <a href="#scene">La scène</a>
-      <a href="#histoire">L'histoire</a>
+      <a href="#comment">Comment ça marche</a>
       <a href="#installer">Installer</a>
     </nav>
     <div class="nav-actions">
@@ -230,31 +230,7 @@
   </div>
 </section>
 
-<!-- 5. L'histoire -->
-<section class="section story" id="histoire" aria-labelledby="story-title">
-  <div class="wrap">
-    <header class="sec-head reveal">
-      <p class="eyebrow">L'histoire vraie</p>
-      <h2 id="story-title">Tu demandes en une phrase.<br><span class="mark">Ton agent s'occupe du reste.</span></h2>
-      <p class="lead">Ces rappels, personne ne les a codés à la main. Un parent a dit ce qu'il voulait, et son agent Hermes a trouvé comment faire, l'a mis en place et l'a testé. Voici leur échange.</p>
-    </header>
-
-    <div class="thread reveal">
-      <div class="msg me"><p>À chaque fois que tu vois une date clé dans un mot, pose un rappel pour le jour même.</p></div>
-      <div class="msg bot"><p>Le cron Beneylu tourne sans agent, avec un simple script : il transmet les mots, mais il ne peut pas en extraire les dates.</p><p>Je propose de réveiller un agent <strong>seulement quand le script a envoyé du nouveau</strong>. Les jours sans nouveauté, il ne coûte aucun token. Je le mets en place ?</p></div>
-      <div class="msg me"><p>oui</p></div>
-      <div class="msg bot"><p>C'est en place. J'ai testé avec un faux mot réaliste : <strong>3 rappels posés au bon jour</strong>, aucun doublon. Puis j'ai tout nettoyé : l'autre parent ne recevra rien de ce test.</p></div>
-      <p class="thread-note">Échange réel, raccourci, prénoms retirés.</p>
-    </div>
-
-    <aside class="aside reveal">
-      <p class="hand">Il vérifie son travail</p>
-      <p>Son premier test n'a rien donné : le faux mot portait la mention « test technique, à ignorer », et l'agent du cron l'a ignoré, comme on le lui demandait. Il l'a compris, a recommencé avec un mot réaliste, puis a vérifié et supprimé les rappels avant qu'ils ne partent.</p>
-    </aside>
-  </div>
-</section>
-
-<!-- 6. Comment ça marche -->
+<!-- 5. Comment ça marche -->
 <section class="section how" id="comment" aria-labelledby="how-title">
   <div class="wrap">
     <header class="sec-head reveal">
@@ -294,7 +270,7 @@
   </div>
 </section>
 
-<!-- 7. Confiance -->
+<!-- 6. Confiance -->
 <section class="section trust" id="confiance" aria-labelledby="trust-title">
   <div class="wrap">
     <header class="sec-head reveal">
@@ -312,7 +288,7 @@
   </div>
 </section>
 
-<!-- 8. Installer -->
+<!-- 7. Installer -->
 <section class="section install" id="installer" aria-labelledby="install-title">
   <div class="wrap">
     <header class="sec-head reveal">
@@ -342,7 +318,7 @@ Inspire-toi de examples/hermes/, adapte-le à ta configuration, et teste avec un
       </div>
       <div class="reveal">
         <h3>À savoir avant de te lancer</h3>
-        <p><code>examples/hermes/</code> contient la configuration que l'agent a trouvée pour notre famille. Ce sont des <strong>pistes</strong>, pas une installation clé en main : ton agent les adapte à sa version de Hermes, à ta messagerie et à ta famille. Souvent, il y arrive seul du premier coup. Parfois, il aura besoin de toi.</p>
+        <p><code>examples/hermes/</code> contient une configuration qui tourne déjà au quotidien. Ce sont des <strong>pistes</strong>, pas une installation clé en main : ton agent les adapte à sa version de Hermes, à ta messagerie et à ta famille. Souvent, il y arrive seul du premier coup. Parfois, il aura besoin de toi.</p>
       </div>
     </div>
 
@@ -386,7 +362,7 @@ Inspire-toi de examples/hermes/, adapte-le à ta configuration, et teste avec un
   </div>
 </section>
 
-<!-- 9. FAQ -->
+<!-- 8. FAQ -->
 <section class="section faq" aria-labelledby="faq-title">
   <div class="wrap narrow">
     <header class="sec-head reveal">
@@ -403,7 +379,7 @@ Inspire-toi de examples/hermes/, adapte-le à ta configuration, et teste avec un
   </div>
 </section>
 
-<!-- 10. Appel final -->
+<!-- 9. Appel final -->
 <section class="final">
   <div class="wrap">
     <div class="final-card reveal">
