@@ -120,3 +120,38 @@ def notification_from_api(raw: dict, base_url: str) -> dict:
         "url": f"{base_url}{url}" if url.startswith("/") else url,
         "read": bool(raw.get("read")),
     }
+
+
+def card_fingerprint(raw: dict) -> str:
+    parts = [
+        raw.get("description") or "",
+        raw.get("content") or "",
+        ",".join(sorted(_item_id(a) for a in raw.get("cardAttachments") or [])),
+        ",".join(sorted(_item_id(e) for e in raw.get("cardEmbeds") or [])),
+    ]
+    return hashlib.sha256("\x1f".join(parts).encode("utf-8")).hexdigest()
+
+
+def card_from_api(raw: dict, board: dict, lk: Lookups) -> dict:
+    return {
+        "id": raw["id"],
+        "board_id": board["id"],
+        "board": board.get("name") or "",
+        "date": parse_dt(raw["createdAt"]).isoformat(),
+        "type": raw.get("type") or "",
+        "author": ", ".join(_name(lk.users, a) for a in raw.get("authorIds") or [raw.get("creatorId")]),
+        "description": html_to_text(raw.get("description") or ""),
+        "text": html_to_text(raw.get("content") or ""),
+        "media_count": len(raw.get("cardAttachments") or []),
+        "embeds": len(raw.get("cardEmbeds") or []),
+    }
+
+
+def media_from_api(raw: dict) -> dict:
+    return {
+        "media_id": raw["id"],
+        "name": raw.get("label") or "",
+        "kind": (raw.get("type_unique_name") or "").lower(),
+        "mime_type": raw.get("mime_type") or "",
+        "download_url": raw.get("download_url") or raw.get("url") or "",
+    }

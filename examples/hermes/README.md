@@ -9,8 +9,9 @@
 Un cron en mode **surveillance** : un script tourne à chaque passage, et l'agent ne démarre que si la sortie du
 script a changé.
 
-1. `beneylu_whats_new.py` appelle `whats_new`, envoie lui-même les nouveautés aux parents par Telegram, puis appelle
-   `ack` seulement si tous les envois ont réussi.
+1. `beneylu_whats_new.py` appelle `whats_new`, envoie lui-même les nouveautés aux parents par Telegram (les photos et
+   vidéos des pancartes de classe en album, avec la légende de l'enseignant), puis appelle `ack` seulement si tous les
+   envois ont réussi.
 2. Il affiche l'historique des derniers mots transmis. Sans nouveauté, la sortie ne change pas : aucun agent ne
    démarre, 0 token.
 3. Quand un mot arrive, l'agent se réveille avec la différence, repère les dates et pose les rappels selon
@@ -58,6 +59,7 @@ cronjob create
 | `BENEYLU_CHATS` | Destinataires : `Nom:chat_id,Nom:chat_id`. Vide, le script signale une erreur et ne confirme rien. |
 | `BENEYLU_KIDS` | Prénoms à garder dans les résumés : `Prénom1,Prénom2`. |
 | `BENEYLU_SENT_LOG` | Historique des envois (par défaut `~/.hermes/cache/beneylu_sent_log.json`). |
+| `BENEYLU_MEDIA_DIR` | Copie locale des photos et vidéos envoyées (par défaut `~/.hermes/cache/beneylu_media`). |
 
 ## Garanties de cette configuration
 
@@ -65,5 +67,8 @@ cronjob create
   parent. Sinon les nouveautés reviennent au passage suivant, marquées comme rappel.
 - **Rappels : posés par un modèle** à partir du texte du mot. Fiable en pratique, pas garanti.
 - **0 token sans nouveauté.** L'agent se réveille aussi quand l'état d'erreur change, pour prévenir.
-- **Ce qui sort de la machine :** le texte des nouveaux mots part vers Telegram et vers le fournisseur du LLM de
+- **Photos et vidéos :** téléchargées une fois, puis envoyées à chaque parent. Un bot Telegram n'envoie pas de
+  fichier de plus de 50 Mo : la légende le signale et renvoie vers Beneylu.
+- **Ce qui sort de la machine :** le texte des nouveaux mots et les photos et vidéos des pancartes partent vers
+  Telegram ; le texte part aussi vers le fournisseur du LLM de
   Hermes. L'état (`state.db`, historique) reste local.

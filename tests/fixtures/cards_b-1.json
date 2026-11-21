@@ -1,0 +1,118 @@
+[
+  {
+    "type": "image",
+    "id": "c-1",
+    "creatorId": 300,
+    "theme": "default",
+    "content": null,
+    "description": "Arc-en-ciel entre deux averses",
+    "createdAt": "2026-11-15T19:30:00+01:00",
+    "updatedAt": "2026-11-15T19:30:00+01:00",
+    "position": 1,
+    "cardAttachments": [
+      {
+        "mediaId": 9001,
+        "resourceId": null,
+        "entityId": "c-1",
+        "entityType": "Card",
+        "timestamp": 1795286476,
+        "signature": "sig-9001"
+      },
+      {
+        "mediaId": 9002,
+        "resourceId": null,
+        "entityId": "c-1",
+        "entityType": "Card",
+        "timestamp": 1795286476,
+        "signature": "sig-9002"
+      }
+    ],
+    "validated": true,
+    "cardEmbeds": [],
+    "draft": false,
+    "authorIds": [
+      300
+    ]
+  },
+  {
+    "type": "video",
+    "id": "c-2",
+    "creatorId": 300,
+    "theme": "default",
+    "content": null,
+    "description": "Séquence « sauter »",
+    "createdAt": "2026-11-14T18:00:00+01:00",
+    "updatedAt": "2026-11-14T18:00:00+01:00",
+    "position": 2,
+    "cardAttachments": [
+      {
+        "mediaId": 9003,
+        "resourceId": null,
+        "entityId": "c-2",
+        "entityType": "Card",
+        "timestamp": 1795286476,
+        "signature": "sig-9003"
+      }
+    ],
+    "validated": true,
+    "cardEmbeds": [],
+    "draft": false,
+    "authorIds": [
+      300
+    ]
+  },
+  {
+    "type": "image",
+    "id": "c-3",
+    "creatorId": 300,
+    "theme": "default",
+    "content": null,
+    "description": "Rentrée",
+    "createdAt": "2026-10-01T10:00:00+02:00",
+    "updatedAt": "2026-10-01T10:00:00+02:00",
+    "position": 3,
+    "cardAttachments": [
+      {
+        "mediaId": 9004,
+        "resourceId": null,
+        "entityId": "c-3",
+        "entityType": "Card",
+        "timestamp": 1795286476,
+        "signature": "sig-9004"
+      }
+    ],
+    "validated": true,
+    "cardEmbeds": [],
+    "draft": false,
+    "authorIds": [
+      300
+    ]
+  },
+  {
+    "type": "image",
+    "id": "c-4",
+    "creatorId": 300,
+    "theme": "default",
+    "content": null,
+    "description": "Brouillon",
+    "createdAt": "2026-11-15T20:00:00+01:00",
+    "updatedAt": "2026-11-15T20:00:00+01:00",
+    "position": 4,
+    "cardAttachments": [
+      {
+        "mediaId": 9005,
+        "resourceId": null,
+        "entityId": "c-4",
+        "entityType": "Card",
+        "timestamp": 1795286476,
+        "signature": "sig-9005"
+      }
+    ],
+    "validated": true,
+    "cardEmbeds": [],
+    "draft": true,
+    "authorIds": [
+      300
+    ]
+  }
+]

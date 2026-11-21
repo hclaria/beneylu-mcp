@@ -45,7 +45,9 @@ def build_server(service: BeneyluService) -> MCPServer:
         annotations=READ_ONLY,
         description=(
             "Vérification automatique du cahier de liaison Beneylu : renvoie les mots nouveaux ou modifiés, les "
-            "nouvelles notifications (pancarte de classe, calendrier de l'école) et le nombre de messages non lus, "
+            "nouvelles cartes des pancartes de classe (photos, vidéos, textes ; media_count > 0 : récupérer les "
+            "fichiers avec get_card_media), les nouvelles notifications (calendrier de l'école, médiathèque) et le "
+            "nombre de messages non lus, "
             "avec un cursor. Rien n'est considéré comme transmis tant que ack(cursor) n'a pas été appelé : chaque "
             "nouveauté non confirmée revient à l'appel suivant, avec already_reported_at (date du premier "
             "signalement) et report_count. Appeler ack(cursor) seulement après avoir transmis les nouveautés aux "
@@ -103,6 +105,27 @@ def build_server(service: BeneyluService) -> MCPServer:
     )
     def get_notifications(limit: int = 20) -> dict:
         return {"notifications": _run(service.notifications, limit)}
+
+    @server.tool(
+        annotations=READ_ONLY,
+        description=(
+            "Pancartes de classe (le mur de photos, vidéos et textes publié par l'enseignant) et leurs cartes, de la "
+            "plus récente à la plus ancienne. board_id limite à une pancarte. Pour les fichiers d'une carte, appeler "
+            "get_card_media."
+        ),
+    )
+    def list_cards(board_id: str | None = None, limit: int = 20) -> dict:
+        return _run(service.list_cards, board_id, limit)
+
+    @server.tool(
+        annotations=READ_ONLY,
+        description=(
+            "Photos et vidéos d'une carte de pancarte : nom, type MIME et download_url, un lien de téléchargement "
+            "direct valable environ une heure. Rappeler l'outil pour un lien frais."
+        ),
+    )
+    def get_card_media(card_id: str) -> dict:
+        return _run(service.get_card_media, card_id)
 
     @server.tool(
         annotations=READ_ONLY,

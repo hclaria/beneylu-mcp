@@ -40,11 +40,18 @@ def main() -> None:
             )
             print(
                 f"whats_new (premier appel) : {len(new['posts'])} mots, {len(new['notifications'])} notifications, "
+                f"{len(new['cards'])} cartes, "
                 f"{new['unread_messages']} messages non lus"
             )
             print(f"whats_new (sans ack) : {len(again['posts'])} mots, {len(again['notifications'])} notifications")
             print(f"whats_new (après ack) : {len(after_ack['posts'])} mots, {len(after_ack['notifications'])} notifications")
             print(f"notifications : {len(service.notifications())}")
+            cards = service.list_cards(limit=5)
+            print(f"pancartes : {len(cards['boards'])}, dernières cartes : {len(cards['cards'])}")
+            with_media = next((c for c in cards["cards"] if c["media_count"]), None)
+            if with_media:
+                media = service.get_card_media(with_media["id"])["media"]
+                print(f"get_card_media : {len(media)} fichier(s), lien présent : {all(m['download_url'] for m in media)}")
             print(f"conversations : {len(service.conversations() or [])}")
             if first:
                 print(f"get_post retrouve le premier mot : {service.get_post(first)['id'] == first}")

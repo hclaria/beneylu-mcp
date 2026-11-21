@@ -1,11 +1,11 @@
 [
   {
     "id": "n-1",
-    "url": "/cardboard/abc",
-    "content": "Mme Martin a publié une carte sur la pancarte \"VIE DE LA CLASSE\".",
+    "url": "/cma/os/app/media-library/medias/1",
+    "content": "Mme Martin a ajouté le document \"Menus.pdf\" au dossier \"CANTINE\".",
     "createdAt": "2026-11-15T10:00:00+01:00",
     "read": false,
-    "appName": "CARDBOARD"
+    "appName": "MEDIA_LIBRARY"
   },
   {
     "id": "n-2",
@@ -29,6 +29,14 @@
     "content": "Mme Martin a publié une carte sur la pancarte \"VIE DE L'ECOLE\".",
     "createdAt": "2026-10-01T10:00:00+02:00",
     "read": true,
+    "appName": "CARDBOARD"
+  },
+  {
+    "id": "n-5",
+    "url": "/cma/os/app/cardboard/board/b-1",
+    "content": "Mme Martin a publié une carte sur la pancarte \"VIE DE LA CLASSE\".",
+    "createdAt": "2026-11-15T19:30:00+01:00",
+    "read": false,
     "appName": "CARDBOARD"
   }
 ]

@@ -134,6 +134,7 @@ class StateStore:
                     done += 1
             self._db.execute("INSERT OR REPLACE INTO kv (key, value) VALUES ('chat_unread', ?)", (str(unread),))
             self._db.execute("INSERT OR REPLACE INTO kv (key, value) VALUES ('initialized', '1')")
+            self._db.execute("INSERT OR REPLACE INTO kv (key, value) VALUES ('cards_initialized', '1')")
             self._db.execute("UPDATE batches SET acked_at = ? WHERE cursor = ?", (now.isoformat(), cursor))
             return {"acknowledged": done, "already_acknowledged": False}
 

@@ -17,6 +17,8 @@ EXPECTED = {
     "get_account",
     "ack",
     "pending",
+    "list_cards",
+    "get_card_media",
 }
 
 

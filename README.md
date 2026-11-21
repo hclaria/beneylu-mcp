@@ -1,8 +1,8 @@
 # beneylu-mcp
 
 Serveur MCP en lecture seule pour [Beneylu School](https://school.beneylu.com), la plateforme de liaison
-parents-école. Il donne à un agent (Hermes, Claude, ...) accès au cahier de liaison, aux notifications et à la
-messagerie d'un compte parent, avec un outil `whats_new` qui renvoie chaque nouveauté jusqu'à ce que sa
+parents-école. Il donne à un agent (Hermes, Claude, ...) accès au cahier de liaison, aux pancartes de classe (photos et
+vidéos), aux notifications et à la messagerie d'un compte parent, avec un outil `whats_new` qui renvoie chaque nouveauté jusqu'à ce que sa
 transmission aux parents soit confirmée par `ack`.
 
 Beneylu n'a pas d'API publique : le serveur utilise l'API interne du site, qui peut changer sans prévenir.
@@ -15,15 +15,22 @@ configuration qu'un agent a trouvée seul : des pistes à adapter, pas une insta
 
 | Outil | Rôle |
 |---|---|
-| `whats_new` | Mots nouveaux ou modifiés, nouvelles notifications (pancarte, calendrier), nombre de messages non lus, et un `cursor`. Pour la vérification automatique. |
+| `whats_new` | Mots nouveaux ou modifiés, nouvelles cartes des pancartes de classe, nouvelles notifications (calendrier, médiathèque), nombre de messages non lus, et un `cursor`. Pour la vérification automatique. |
 | `ack(cursor)` | Confirme que les nouveautés de ce `cursor` ont été transmises : elles ne reviennent plus. Rejouable sans effet. |
 | `pending` | Nouveautés renvoyées mais pas encore confirmées. Lit l'état local seulement. |
 | `list_posts(page)` | Mots du cahier de liaison, avec enfant, auteur, classe et état de signature. |
 | `get_post(post_id)` | Un mot complet. |
+| `list_cards(board_id, limit)` | Pancartes de classe et leurs cartes (photos, vidéos, textes publiés par l'enseignant), de la plus récente à la plus ancienne. |
+| `get_card_media(card_id)` | Photos et vidéos d'une carte, avec un lien de téléchargement direct valable environ une heure. |
 | `get_notifications(limit)` | Fil de notifications Beneylu. |
 | `list_conversations` | Conversations de la messagerie. |
 | `get_conversation(conversation_id)` | Messages d'une conversation. Peut les marquer comme lus : seulement à la demande d'un parent. |
 | `get_account` | Compte connecté, enfants, classes. |
+
+Une carte de pancarte arrive dans `whats_new["cards"]` avec `media_count` ; la notification « … a publié une carte
+sur la pancarte » qui l'accompagne n'est plus renvoyée par `whats_new`, puisqu'elle ne dit rien de plus
+(`get_notifications` la garde). Après une mise à jour depuis une version sans pancartes, seules les cartes publiées
+ensuite sont signalées : les précédentes l'ont déjà été par leur notification.
 
 Le serveur n'écrit jamais sur Beneylu (`ack` n'écrit que dans l'état local) : le client HTTP refuse tout `POST` en dehors de la connexion et de la
 recherche de noms. Il n'appelle jamais `/visit`, l'appel par lequel le site signale qu'un parent a ouvert le cahier.
@@ -76,8 +83,8 @@ le chemin complet de `uvx` et un `PATH` de base suffisent au lanceur généré p
 Exemple de consigne de vérification régulière :
 
 ```
-/cron every 3h Appelle whats_new sur Beneylu. S'il y a un mot nouveau ou modifié, une notification de calendrier
-ou des messages non lus, préviens les deux parents avec un résumé court : ce qui change, pour quel enfant, ce qu'il
+/cron every 3h Appelle whats_new sur Beneylu. S'il y a un mot nouveau ou modifié, une carte de pancarte (envoie
+ses photos et vidéos, via get_card_media), une notification de calendrier ou des messages non lus, préviens les deux parents avec un résumé court : ce qui change, pour quel enfant, ce qu'il
 faut prévoir, et si un mot attend une signature ; signale les éléments qui ont un already_reported_at comme un
 rappel. Appelle ensuite ack avec le cursor. Sinon, appelle ack et ne dis rien.
 ```
