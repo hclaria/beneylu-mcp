@@ -1,0 +1,12 @@
+{
+  "id": 9001,
+  "label": "IMG_0090.jpg",
+  "type_unique_name": "IMAGE",
+  "optimized": true,
+  "mime_type": "image/jpeg",
+  "downloadable": true,
+  "readable": true,
+  "url": "https://media.example/9001.jpg?X-Amz-Signature=a",
+  "display_url": "https://media.example/9001.jpg?inline",
+  "download_url": "https://media.example/9001.jpg?X-Amz-Signature=a"
+}

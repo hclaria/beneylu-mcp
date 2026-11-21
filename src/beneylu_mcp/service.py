@@ -7,6 +7,9 @@ from .client import BeneyluError
 from .config import DEFAULT_FIRST_RUN_DAYS, DETECTION_WINDOW_DAYS
 from .models import (
     Lookups,
+    card_fingerprint,
+    card_from_api,
+    media_from_api,
     notification_from_api,
     parse_dt,
     post_date,
@@ -19,6 +22,10 @@ WINDOW = timedelta(days=DETECTION_WINDOW_DAYS)
 POSTS_PATH = "/api/family/posts"
 NOTIFICATIONS_PATH = "/api/notification/notifications-in-app"
 CHAT_PATH = "/api/chat/family"
+BOARDS_PATH = "/api/cardboard/boards"
+MEDIA_PATH = "/api/media-library/media"
+# The card itself is announced in whats_new["cards"]; its in-app notification would only repeat it, emptier.
+CARD_NOTIFICATION_APP = "CARDBOARD"
 
 
 class BeneyluService:
@@ -79,18 +86,51 @@ class BeneyluService:
     def conversation(self, conversation_id: str) -> Any:
         return self.client.get_json(f"{CHAT_PATH}/conversations/{conversation_id}/messages")
 
+    def list_cards(self, board_id: str | None = None, limit: int = 20) -> dict:
+        boards = self._boards()
+        if board_id is not None:
+            boards = [b for b in boards if b["id"] == board_id]
+            if not boards:
+                raise BeneyluError(f"Pancarte introuvable : {board_id}.")
+        raws = [(b, r) for b in boards for r in self._board_cards(b)]
+        raws.sort(key=lambda br: parse_dt(br[1]["createdAt"]), reverse=True)
+        raws = raws[: max(limit, 0)]
+        lk = self._lookups_ids(i for _, r in raws for i in (r.get("authorIds") or [r.get("creatorId")]))
+        return {
+            "boards": [{"id": b["id"], "name": b.get("name") or "", "description": b.get("description") or ""} for b in boards],
+            "cards": [card_from_api(r, b, lk) for b, r in raws],
+        }
+
+    def get_card_media(self, card_id: str) -> dict:
+        for board in self._boards():
+            for raw in self._board_cards(board):
+                if raw["id"] != card_id:
+                    continue
+                media = []
+                for a in raw.get("cardAttachments") or []:
+                    # Beneylu signs each attachment for this card; the signature is required to read it.
+                    params = {k: a.get(k) for k in ("mediaId", "entityId", "entityType", "timestamp", "signature")}
+                    media.append(media_from_api(self.client.get_json(f"{MEDIA_PATH}/{a['mediaId']}", params) or {}))
+                return {"card_id": card_id, "board": board.get("name") or "", "media": media}
+        raise BeneyluError(f"Carte introuvable : {card_id}.")
+
     def whats_new(self) -> dict:
         now = self._now()
         start = now - WINDOW
         first_run = self.state.get("initialized") is None
         report_start = now - timedelta(days=self.first_run_days) if first_run else start
+        # An install that predates cards already announced them through notifications: start from now.
+        cards_start = report_start if first_run or self.state.get("cards_initialized") else now
 
         # Read everything before touching the state, so a failure loses nothing.
         posts = self._posts_in_window(start, now)
         notifications = [
             n
             for n in self.client.get_json(NOTIFICATIONS_PATH) or []
-            if n.get("appName") != "FAMILY" and start <= parse_dt(n["createdAt"]) <= now
+            if n.get("appName") not in ("FAMILY", CARD_NOTIFICATION_APP) and start <= parse_dt(n["createdAt"]) <= now
+        ]
+        cards = [
+            (b, r) for b in self._boards() for r in self._board_cards(b) if start <= parse_dt(r["createdAt"]) <= now
         ]
         unread = _as_int(self.client.get_json(f"{CHAT_PATH}/count"))
         lk = self._lookups(posts)
@@ -110,13 +150,21 @@ class BeneyluService:
             if change and parse_dt(raw["createdAt"]) >= report_start:
                 payload = {**notification_from_api(raw, self.base_url), "change": change}
                 reported.append(("notification", raw["id"], raw["id"], payload, parse_dt(raw["createdAt"]).isoformat()))
+        card_lk = self._lookups_ids(i for _, r in cards for i in (r.get("authorIds") or [r.get("creatorId")]))
+        for board, raw in cards:
+            fingerprint = card_fingerprint(raw)
+            change = self._change("card", raw["id"], fingerprint)
+            observed.append(("card", raw["id"], fingerprint))
+            if change and parse_dt(raw["createdAt"]) >= cards_start:
+                payload = {**card_from_api(raw, board, card_lk), "change": change}
+                reported.append(("card", raw["id"], fingerprint, payload, parse_dt(raw["createdAt"]).isoformat()))
         acked_unread = int(self.state.get("chat_unread") or 0)
 
         # Nothing is marked seen here: only ack(cursor) does, once the caller has passed the news on.
         cursor = uuid.uuid4().hex
         self.state.prune_batches(now - WINDOW)
         pending = self.state.record_batch(cursor, now, observed, reported, unread)
-        out: dict[str, list] = {"post": [], "notification": []}
+        out: dict[str, list] = {"post": [], "notification": [], "card": []}
         for item in pending:
             again = item["report_count"] > 1
             out[item["source"]].append(
@@ -132,6 +180,7 @@ class BeneyluService:
             "cursor": cursor,
             "posts": out["post"],
             "notifications": out["notification"],
+            "cards": out["card"],
             "unread_messages": unread,
             "unread_messages_increased": unread > acked_unread,
         }
@@ -147,6 +196,7 @@ class BeneyluService:
         return {
             "posts": [self._pending_view(i) for i in items if i["source"] == "post"],
             "notifications": [self._pending_view(i) for i in items if i["source"] == "notification"],
+            "cards": [self._pending_view(i) for i in items if i["source"] == "card"],
         }
 
     @staticmethod
@@ -172,6 +222,14 @@ class BeneyluService:
     def _posts_page(self, page: int) -> dict:
         return self.client.get_json(POSTS_PATH, {"page": page, "status": "published"}) or {}
 
+    def _boards(self) -> list[dict]:
+        boards = self.client.get_json(BOARDS_PATH) or []
+        return [b for b in boards if not b.get("archived") and not b.get("isHidden")]
+
+    def _board_cards(self, board: dict) -> list[dict]:
+        cards = self.client.get_json(f"{BOARDS_PATH}/{board['id']}/cards") or []
+        return [c for c in cards if not c.get("draft")]
+
     def _account_raw(self) -> dict:
         if self._me is None:
             self._me = self.client.get_json("/api/auth/users/me") or {}
@@ -188,6 +246,10 @@ class BeneyluService:
         for raw in raws:
             ids.add(raw.get("authorId"))
             ids.update(s.get("signedById") for s in raw.get("postSignatures") or [])
+        return self._lookups_ids(ids)
+
+    def _lookups_ids(self, user_ids: Iterable) -> Lookups:
+        ids = set(user_ids)
         missing = sorted(i for i in ids - self._users.keys() if isinstance(i, int))
         if missing:
             for user in self.client.post_json("/api/auth/users/lookup", {"ids": missing}) or []:

@@ -29,7 +29,7 @@ def test_lost_reply_is_reported_again(svc):
 
 def test_ack_stops_reports(svc):
     r = svc.whats_new()
-    assert svc.ack(r["cursor"]) == {"acknowledged": 2, "already_acknowledged": False}
+    assert svc.ack(r["cursor"]) == {"acknowledged": 4, "already_acknowledged": False}  # 1 post, 1 notification, 2 cards
     after = svc.whats_new()
     assert after["posts"] == [] and after["notifications"] == []
     assert after["first_run"] is False
@@ -68,7 +68,7 @@ def test_ack_covers_items_reported_by_earlier_batches(svc):
     svc.whats_new()
     second = svc.whats_new()
     svc.ack(second["cursor"])
-    assert svc.pending() == {"posts": [], "notifications": []}
+    assert svc.pending() == {"posts": [], "notifications": [], "cards": []}
 
 
 def test_pending_item_survives_leaving_the_window(svc, clock):
@@ -110,7 +110,7 @@ def test_failed_fetch_records_no_batch(svc, fake):
     fake.fail("GET", "/api/notification/notifications-in-app")
     with pytest.raises(BeneyluError):
         svc.whats_new()
-    assert svc.pending() == {"posts": [], "notifications": []}
+    assert svc.pending() == {"posts": [], "notifications": [], "cards": []}
 
 
 def test_ack_through_mcp(svc):
@@ -119,6 +119,6 @@ def test_ack_through_mcp(svc):
     pending = json.loads(text_of(call(server, "pending")))
     assert [p["id"] for p in pending["posts"]] == [P + "1"]
     ok = json.loads(text_of(call(server, "ack", {"cursor": body["cursor"]})))
-    assert ok == {"acknowledged": 2, "already_acknowledged": False}
+    assert ok == {"acknowledged": 4, "already_acknowledged": False}  # 1 post, 1 notification, 2 cards
     bad = call(server, "ack", {"cursor": "nope"})
     assert bad.is_error and "Curseur inconnu" in text_of(bad)

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "b-1",
+    "authorId": 300,
+    "name": "VIE DE LA CLASSE",
+    "display": "one-column",
+    "description": "Photos et vidéos de la classe.",
+    "createdAt": "2026-09-01T08:00:00+02:00",
+    "updatedAt": "2026-11-15T19:30:00+01:00",
+    "tags": [],
+    "archived": false,
+    "isHidden": false
+  },
+  {
+    "id": "b-2",
+    "authorId": 300,
+    "name": "ANCIENNE PANCARTE",
+    "description": null,
+    "createdAt": "2025-09-01T08:00:00+02:00",
+    "archived": true,
+    "isHidden": false
+  }
+]

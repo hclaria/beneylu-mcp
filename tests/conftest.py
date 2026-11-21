@@ -42,6 +42,8 @@ class FakeClient:
         self.pages = {n: load(f"posts_page{n}.json") for n in (1, 2, 3)}
         self.notification_list = load("notifications.json")
         self.unread = 0
+        self.boards = load("boards.json")
+        self.cards = {"b-1": load("cards_b-1.json"), "b-2": []}
         self.failing: set[tuple[str, str]] = set()
         self.calls: list[tuple[str, str, dict]] = []
 
@@ -62,6 +64,13 @@ class FakeClient:
             return copy.deepcopy(self.pages[params["page"]])
         if path == "/api/notification/notifications-in-app":
             return copy.deepcopy(self.notification_list)
+        if path == "/api/cardboard/boards":
+            return copy.deepcopy(self.boards)
+        if path.startswith("/api/cardboard/boards/") and path.endswith("/cards"):
+            return copy.deepcopy(self.cards[path.split("/")[4]])
+        if path.startswith("/api/media-library/media/"):
+            assert params["signature"] == f"sig-{params['mediaId']}" and params["entityType"] == "Card"
+            return {**load("media.json"), "id": params["mediaId"]}
         if path == "/api/chat/family/count":
             return self.unread
         if path == "/api/chat/family/conversations":
@@ -90,6 +99,9 @@ class FakeClient:
         self._post(post_id)["postSignatures"].append(
             {"signedById": by, "signedForId": child, "createdAt": "2026-11-16T08:00:00+01:00", "value": "signature"}
         )
+
+    def add_card(self, board_id, card):
+        self.cards[board_id].insert(0, card)
 
     def fail(self, method, path):
         self.failing.add((method, path))

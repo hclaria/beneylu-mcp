@@ -1,4 +1,5 @@
 import importlib.util
+import json
 import os
 import sys
 from pathlib import Path
@@ -19,9 +20,24 @@ POST = {
 }
 
 
+CARD = {
+    "id": "c1",
+    "change": "new",
+    "already_reported_at": None,
+    "board": "VIE DE LA CLASSE",
+    "author": "Mme Rivière",
+    "date": "2026-11-20T19:30:00+01:00",
+    "description": "Arc-en-ciel entre deux averses",
+    "text": "",
+    "media_count": 2,
+}
+TEXT_CARD = {**CARD, "id": "c2", "description": "Sortie au parc vendredi", "media_count": 0}
+
+
 class FakeMcp:
     calls: list = []
     posts: list = [POST]
+    cards: list = []
 
     def __init__(self):
         FakeMcp.calls = []
@@ -29,7 +45,13 @@ class FakeMcp:
     def tool(self, name, args=None):
         FakeMcp.calls.append((name, args))
         if name == "whats_new":
-            return {"posts": list(FakeMcp.posts), "notifications": [], "cursor": "c1"}
+            return {"posts": list(FakeMcp.posts), "notifications": [], "cards": list(FakeMcp.cards), "cursor": "c1"}
+        if name == "get_card_media":
+            return {"media": [
+                {"media_id": 1, "name": "a.jpg", "mime_type": "image/jpeg", "download_url": "https://m/1"},
+                {"media_id": 2, "name": "b.mp4", "mime_type": "video/mp4", "download_url": "https://m/2"},
+                {"media_id": 3, "name": "c.pdf", "mime_type": "application/pdf", "download_url": "https://m/3"},
+            ]}
         return {}
 
     def close(self):
@@ -47,7 +69,10 @@ def load_script():
 def script(tmp_path, monkeypatch):
     mod = load_script()
     monkeypatch.setattr(FakeMcp, "posts", [POST])
+    monkeypatch.setattr(FakeMcp, "cards", [])
     monkeypatch.setattr(mod, "Mcp", FakeMcp)
+    monkeypatch.setattr(mod, "MEDIA_DIR", str(tmp_path / "media"))
+    monkeypatch.setattr(mod.urllib.request, "urlretrieve", lambda url, path: open(path, "wb").write(url.encode()))
     monkeypatch.setattr(mod, "LOG", str(tmp_path / "sent_log.json"))
     monkeypatch.setattr(mod, "bot_token", lambda: "token")
     monkeypatch.setattr(mod, "send", lambda token, chat, text: None)
@@ -125,3 +150,43 @@ def test_server_error_is_reported(monkeypatch):
                                      "import sys; sys.stderr.write('Identifiants Beneylu manquants\\n'); sys.exit(1)"])
     with pytest.raises(RuntimeError, match="Identifiants Beneylu manquants"):
         mod.Mcp()
+
+
+def test_card_media_sent_to_every_parent_before_ack(script, monkeypatch):
+    monkeypatch.setattr(FakeMcp, "cards", [CARD, TEXT_CARD])
+    monkeypatch.setattr(script, "CHATS", {"A": "1", "B": "2"})
+    texts, uploads = [], []
+    monkeypatch.setattr(script, "send", lambda token, chat, text: texts.append((chat, text)))
+    monkeypatch.setattr(script, "tg_upload", lambda token, method, fields, files: uploads.append(
+        (fields["chat_id"], method, json.loads(fields["media"]), sorted(files))))
+    script.main()
+    assert [u[:2] for u in uploads] == [("1", "sendMediaGroup"), ("2", "sendMediaGroup")]
+    album = uploads[0][2]
+    assert [m["type"] for m in album] == ["photo", "video"]  # the PDF is not a photo or video
+    assert "Arc-en-ciel" in album[0]["caption"] and "caption" not in album[1]
+    assert all("Sortie au parc" in t for _, t in texts)  # card without media rides with the text summary
+    assert FakeMcp.calls.count(("get_card_media", {"card_id": "c1"})) == 1  # downloaded once for all parents
+    assert acked()
+    assert '"kind": "pancarte"' in open(script.LOG, encoding="utf-8").read()
+
+
+def test_no_ack_when_media_upload_fails(script, monkeypatch, capsys):
+    monkeypatch.setattr(FakeMcp, "posts", [])
+    monkeypatch.setattr(FakeMcp, "cards", [CARD])
+
+    def refuse(*args):
+        raise RuntimeError("Telegram a refusé sendMediaGroup")
+
+    monkeypatch.setattr(script, "tg_upload", refuse)
+    script.main()
+    assert not acked()
+    assert capsys.readouterr().out.startswith("ÉTAT : ÉCHEC")
+
+
+def test_single_photo_goes_with_its_caption(script, monkeypatch, tmp_path):
+    photo = tmp_path / "p.jpg"
+    photo.write_bytes(b"x")
+    calls = []
+    monkeypatch.setattr(script, "tg_upload", lambda token, method, fields, files: calls.append((method, fields, files)))
+    script.send_card("t", "1", CARD, [(str(photo), "image/jpeg")])
+    assert calls[0][0] == "sendPhoto" and "Arc-en-ciel" in calls[0][1]["caption"] and "photo" in calls[0][2]
